@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.araujo.jordan.excuseme">
+
+    <application>
+        <activity
+            android:name=".InvisibleActivity"
+            android:theme="@style/ExcuseMe.Theme.Transparent" />
+    </application>
+</manifest>
