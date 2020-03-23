@@ -11,7 +11,7 @@ ExcuseMe is an Android library that provides an one-line implementation for andr
 ## Why use ExcuseMe?
 
 1. Better performance with Kotlin Coroutines
-   * A better performance in comparision with other libraries that use Thread, as it uses less memory have better performance for this situation.
+   * A better performance in comparison with other libraries that use Thread as it uses less memory have better performance than threads for small async/ui thread changes.
 2. One-line permission request
    * ExcuseMe could be used with Kotlin Suspending functions that gives a better syntax and better code readability
 3. No more interface listeners to implement
