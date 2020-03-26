@@ -65,7 +65,7 @@ allprojects {
 
 ```gradle
 dependencies {
-	implementation 'com.github.AraujoJordan:ExcuseMe:0.0.1'
+	implementation 'com.github.AraujoJordan:ExcuseMe:0.0.2'
 }
 ```
 
