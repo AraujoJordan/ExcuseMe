@@ -23,6 +23,7 @@ ExcuseMe is an Android library that provides an one-line implementation for andr
 ## Usage
 
 ExcuseMe is easier way to implement Permissions in Android. But you still have to add the permission in the AndroidManifest.xml file.
+
 ![AndroidManifest.xml location](/doc/manifestLocation.webp "AndroidManifest.xml location")
 
 ```xml
