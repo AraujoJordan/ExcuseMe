@@ -31,7 +31,7 @@ ExcuseMe is easier way to implement Permissions in Android. But you still have t
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="your.package.name">
 
-    <!-- Add you permission here-->
+    <!-- Add your permission here-->
     <uses-permission android:name="android.permission.CAMERA" />
     
     <application
