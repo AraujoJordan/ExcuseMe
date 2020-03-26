@@ -1,7 +1,6 @@
 # ExcuseMe
 Because we don't need to be rude for ask permissions
 
-# KtList
 [![CircleCI](https://circleci.com/gh/AraujoJordan/ExcuseMe.svg?style=shield)](https://circleci.com/gh/AraujoJordan/ExcuseMe)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/AraujoJordan/ExcuseMe/LICENSE)
 [![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/AraujoJordan/ExcuseMe/)
@@ -12,25 +11,25 @@ ExcuseMe is an Android library that provides an one-line implementation for andr
 ## Why use ExcuseMe?
 
 1. Better performance with Kotlin Coroutines
- * A better performance in comparision with other libraries that use Thread, as it uses less memory have better performance for this situation.
+   * A better performance in comparison with other libraries that use Thread as it uses less memory have better performance than threads for small async/ui thread changes.
 2. One-line permission request
- * ExcuseMe could be used with Kotlin Suspending functions that gives a better syntax and better code readability
+   * ExcuseMe could be used with Kotlin Suspending functions that gives a better syntax and better code readability
 3. No more interface listeners to implement
- * With ExcuseMe, you don't need to implement callbacks interfaces that it just add boilerplate code to maintain
+   * With ExcuseMe, you don't need to implement callbacks interfaces that it just add boilerplate code to maintain
 4. It can be used with lambda callbacks
- * If you don't know how to implement suspend functions, ExcuseMe could be used with Kotlin lambda callbacks
+   * If you don't know how to implement suspend functions, ExcuseMe could be used with Kotlin lambda callbacks
 5. Polite way to ask for requests
- * Because we don't need to be rude for ask permissions
+   * Because we don't need to be rude for ask permissions
 
 ## Usage
 
 ### Simple one-line implementation
 ```kotlin
 suspend fun requestToUseCamera() {
-        val res = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
-        if(res.granted.contains(android.Manifest.permission.CAMERA)) {
-            //Do your naughty camera stuffs
-        }
+	val res = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
+	if(res.granted.contains(android.Manifest.permission.CAMERA)) {
+		//Do your naughty camera stuffs
+	}
 }
 ```
 And that's it. No more Adapter implementations, ViewHolders and others boilerplate to maintain in your code.
