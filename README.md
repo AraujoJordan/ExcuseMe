@@ -42,8 +42,9 @@ ExcuseMe is easier way to implement Permissions in Android. But you still have t
 </manifest>
 ```
 
-You can find the complete list of permissions on [this documentation](https://developer.android.com/reference/android/Manifest.permission "Manifest Permissions")
-And than, you can use on of the two implementations bellow to add the permission properly:
+You can find the complete list of permissions on [this documentation](https://developer.android.com/reference/android/Manifest.permission "Manifest Permissions").
+
+After that, you can use on of the two implementations bellow to add the permission properly:
 
 1. [The Simple one-line Usage](#onelineusage)
 2. [Kotlin Lambda Callback Usage](#lambdacallback)
