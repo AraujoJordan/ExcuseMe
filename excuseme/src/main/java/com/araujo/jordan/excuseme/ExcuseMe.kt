@@ -46,7 +46,7 @@ class ExcuseMe private constructor() {
     }
 
     private var weakContext: WeakReference<Context>? = null
-    private var permissionStatus: PermissionStatus? = null
+    private var permissionStatus = PermissionStatus()
     private var channel: Channel<Boolean>? = null
 
     companion object {
@@ -124,16 +124,13 @@ class ExcuseMe private constructor() {
      * @param permission one or multiple permissions from android.Manifest.permission.* strings
      * @return PermissionStatus object that holds the result with the granted/refused permissions
      */
-    suspend fun permissionFor(vararg permission: String): PermissionStatus {
-        return runPermissionRequest(*permission)
-    }
+    suspend fun permissionFor(vararg permission: String) = runPermissionRequest(*permission)
 
     /**
      * Calls the InvisibleActivity that makes the Permission request. The channel will
      * listen for the completePermission()
      */
     private suspend fun runPermissionRequest(vararg permissions: String): PermissionStatus {
-        val permissionStatus = PermissionStatus()
         weakContext?.get()?.let { context ->
             context.startActivity(Intent(context, InvisibleActivity::class.java).apply {
                 putExtra("permissions", permissions)
@@ -142,6 +139,6 @@ class ExcuseMe private constructor() {
         if (channel == null) channel = Channel()
         channel?.receive()
         channel = null
-        return permissionStatus
+        return HOLDER.INSTANCE.permissionStatus
     }
 }

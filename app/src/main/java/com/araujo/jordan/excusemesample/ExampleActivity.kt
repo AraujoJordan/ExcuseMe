@@ -13,6 +13,12 @@ import kotlinx.coroutines.launch
 
 class ExampleActivity : AppCompatActivity() {
 
+    val green by lazy { AppCompatResources.getColorStateList(this, R.color.colorGreen) }
+    val red by lazy { AppCompatResources.getColorStateList(this, R.color.colorRed) }
+
+    val granted = "Granted"
+    val denied = "Denied"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,8 +27,18 @@ class ExampleActivity : AppCompatActivity() {
 
         calendarPermissionButton.setOnClickListener {
             CoroutineScope(Dispatchers.Main.immediate).launch {
-                ExcuseMe.couldYouGive(this@ExampleActivity).permissionFor(permission.WRITE_CALENDAR)
-                updateTextsWithPermissions()
+                val res = ExcuseMe.couldYouGive(this@ExampleActivity)
+                    .permissionFor(permission.WRITE_CALENDAR)
+
+                calendarPermissionsFeedback?.apply {
+                    if (res.granted.contains(permission.WRITE_CALENDAR)) {
+                        text = granted
+                        setTextColor(green.defaultColor)
+                    } else {
+                        text = denied
+                        setTextColor(red.defaultColor)
+                    }
+                }
             }
         }
         allPermissionsButton.setOnClickListener {
@@ -53,11 +69,7 @@ class ExampleActivity : AppCompatActivity() {
     private fun updateTextsWithPermissions() {
         Log.d("MainActivity", "updateTextsWithPermissions()")
 
-        val green = AppCompatResources.getColorStateList(this, R.color.colorGreen)
-        val red = AppCompatResources.getColorStateList(this, R.color.colorRed)
 
-        val granted = "Granted"
-        val denied = "Denied"
 
 
         calendarPermissionsFeedback?.apply {
