@@ -19,19 +19,24 @@
  *
  */
 
-package com.araujo.jordan.excuseme
+package com.araujo.jordan.excuseme.view
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
+import com.araujo.jordan.excuseme.ExcuseMe
+import com.araujo.jordan.excuseme.model.PermissionStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Invisible screen that will handle the dialog permissions and it's results.
  * It won't block the user and it will finish itself after the result
  */
-class InvisibleActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallback {
+class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
     private val PERMISSIONS_REQUEST_ID = 4002
 
@@ -39,8 +44,17 @@ class InvisibleActivity : Activity(), ActivityCompat.OnRequestPermissionsResultC
         super.onCreate(savedInstanceState)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-        intent.getStringArrayExtra("permissions")?.let {
-            ActivityCompat.requestPermissions(this, it, PERMISSIONS_REQUEST_ID)
+        intent.getStringArrayExtra("permissions")?.let { permissions ->
+            CoroutineScope(Dispatchers.Main.immediate).launch {
+                val showPermission = ExcuseMe.getGentlyDialog()
+                    ?.showDialogForPermission(this@InvisibleActivity, *permissions) ?: false
+                if (showPermission)
+                    ActivityCompat.requestPermissions(
+                        this@InvisibleActivity,
+                        permissions,
+                        PERMISSIONS_REQUEST_ID
+                    )
+            }
         }
     }
 
@@ -58,7 +72,9 @@ class InvisibleActivity : Activity(), ActivityCompat.OnRequestPermissionsResultC
                 else -> permissionStatus.denied.add(it)
             }
         }
-        ExcuseMe.onPermissionResult(permissionStatus)
+        ExcuseMe.onPermissionResult(
+            permissionStatus
+        )
         finish()
     }
 

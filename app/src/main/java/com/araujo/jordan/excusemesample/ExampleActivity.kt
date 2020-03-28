@@ -28,7 +28,7 @@ class ExampleActivity : AppCompatActivity() {
         calendarPermissionButton.setOnClickListener {
             CoroutineScope(Dispatchers.Main.immediate).launch {
                 val res = ExcuseMe.couldYouGive(this@ExampleActivity)
-                    .permissionFor(permission.WRITE_CALENDAR)
+                    .gently("save an event in calendar").permissionFor(permission.WRITE_CALENDAR)
 
                 calendarPermissionsFeedback?.apply {
                     if (res.granted.contains(permission.WRITE_CALENDAR)) {

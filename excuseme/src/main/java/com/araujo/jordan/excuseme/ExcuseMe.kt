@@ -27,6 +27,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.araujo.jordan.excuseme.model.PermissionStatus
+import com.araujo.jordan.excuseme.view.GentlyDialog
+import com.araujo.jordan.excuseme.view.InvisibleActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -46,8 +49,10 @@ class ExcuseMe private constructor() {
     }
 
     private var weakContext: WeakReference<Context>? = null
-    private var permissionStatus = PermissionStatus()
+    private var permissionStatus =
+        PermissionStatus()
     private var channel: Channel<Boolean>? = null
+    private var gentlyDialog: GentlyDialog? = null
 
     companion object {
 
@@ -98,6 +103,11 @@ class ExcuseMe private constructor() {
             }
             return true
         }
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun getGentlyDialog() = this.instance.gentlyDialog
     }
 
     /**
@@ -118,6 +128,29 @@ class ExcuseMe private constructor() {
     }
 
     /**
+     * Add a dialog before ask the permission to explain the reason of asking this permission.
+     * This will help to reduce the users permissions denied that could decrease your Google
+     * Store Vitals score.
+     * Source: https://developer.android.com/topic/performance/vitals/permissions
+     *
+     * This dialog will create a text along with your explanation to clarify the usage of the
+     * permission. For example, if you want permission to use the camera for scan user documents,
+     * you can simply add "scan documents for verification". So the ExcuseMe will generate a text like:
+     * "To scan documents for verification, allow YourAppName to access the permission for Camera."
+     *
+     * In this way, if the user deny the permission from this dialog, it won't propagate to your app
+     * real permission, and you Play Store Vitals score.
+     *
+     * @param explanation an array of simple explanations related to your permissions request
+     */
+    fun gently(vararg explanation: String): ExcuseMe {
+        weakContext?.let {
+            gentlyDialog = GentlyDialog(*explanation)
+        }
+        return HOLDER.INSTANCE
+    }
+
+    /**
      * Ask permission for one or multiple permissions and start the permission dialog
      * This method use async return from Kotlin Coroutines and can be used without callbacks
      *
@@ -132,13 +165,22 @@ class ExcuseMe private constructor() {
      */
     private suspend fun runPermissionRequest(vararg permissions: String): PermissionStatus {
         weakContext?.get()?.let { context ->
-            context.startActivity(Intent(context, InvisibleActivity::class.java).apply {
-                putExtra("permissions", permissions)
-            })
+
+            val deniedPerm = permissions.filter { !doWeHavePermissionFor(context, it) }
+
+            if (deniedPerm.isEmpty()) {
+                permissionStatus = PermissionStatus(granted = permissions.toMutableList())
+                return permissionStatus
+            } else {
+                context.startActivity(Intent(context, InvisibleActivity::class.java).apply {
+                    putExtra("permissions", deniedPerm.toTypedArray())
+                })
+                if (channel == null) channel = Channel()
+                channel?.receive()
+                channel = null
+            }
         }
-        if (channel == null) channel = Channel()
-        channel?.receive()
-        channel = null
+
         return HOLDER.INSTANCE.permissionStatus
     }
 }

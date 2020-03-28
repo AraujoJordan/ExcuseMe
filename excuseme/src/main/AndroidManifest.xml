@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".InvisibleActivity"
+            android:name=".view.InvisibleActivity"
             android:theme="@style/ExcuseMe.Theme.Transparent" />
     </application>
 </manifest>

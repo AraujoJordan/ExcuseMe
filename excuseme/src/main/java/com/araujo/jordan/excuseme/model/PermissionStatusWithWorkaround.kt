@@ -19,13 +19,27 @@
  *
  */
 
-package com.araujo.jordan.excuseme
+package com.araujo.jordan.excuseme.model
+
+import android.content.Context
+import java.lang.ref.WeakReference
 
 /**
  * Data class that hold the permissions results.
  */
-data class PermissionStatus(
-    var granted: MutableList<String> = mutableListOf(),
-    var denied: MutableList<String> = mutableListOf(),
-    var askGently: MutableList<String> = mutableListOf()
-)
+data class PermissionStatusWithWorkaround(
+    override var granted: MutableList<String> = mutableListOf(),
+    override var denied: MutableList<String> = mutableListOf(),
+    override var askGently: MutableList<String> = mutableListOf(),
+    var weakReference: WeakReference<Context>
+) : PermissionStatus(granted, denied, askGently) {
+    /**
+     * If the permission is denied, show a dialog that can redirect the user to the permissions
+     * settings screen, to let the user enable the permission manually.
+     *
+     * @return PermissionStatus object that holds the result with the granted/refused permissions
+     */
+    suspend fun please() {
+
+    }
+}
