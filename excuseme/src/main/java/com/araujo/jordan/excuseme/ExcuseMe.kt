@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.araujo.jordan.excuseme.model.PermissionStatus
 import com.araujo.jordan.excuseme.view.InvisibleActivity
+import com.araujo.jordan.excuseme.view.dialog.DialogType
 import com.araujo.jordan.excuseme.view.dialog.PosPermissionDialog
 import com.araujo.jordan.excuseme.view.dialog.PrePermissionDialog
 import kotlinx.coroutines.CoroutineScope
@@ -197,7 +198,7 @@ class ExcuseMe private constructor() {
      * snippet have to call other callback that will send a boolean to notify the ExcuseMe to continue
      * or cancel the permission request
      */
-    fun customGently(customGentlyRequest: ((Boolean) -> Unit) -> Unit): ExcuseMe {
+    fun gently(customGentlyRequest: ((Boolean) -> Unit) -> Unit): ExcuseMe {
         preDialog = PrePermissionDialog(
             customGentlyRequest
         )
@@ -243,7 +244,7 @@ class ExcuseMe private constructor() {
      * snippet will tell wich situation is and will wait the boolean to notify the ExcuseMe to continue
      * or cancel
      */
-    fun customPlease(customDialogRequest: ((type: PosPermissionDialog.DialogType, ((Boolean) -> Unit)) -> Unit)): ExcuseMe {
+    fun please(customDialogRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)): ExcuseMe {
         posDialog = PosPermissionDialog(customDialogRequest)
         return HOLDER.INSTANCE
     }
@@ -282,7 +283,6 @@ class ExcuseMe private constructor() {
                 channel = null
             }
         }
-
         return HOLDER.INSTANCE.permissionStatus
     }
 }

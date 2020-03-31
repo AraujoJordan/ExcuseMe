@@ -31,7 +31,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.araujo.jordan.excuseme.ExcuseMe
 import com.araujo.jordan.excuseme.model.PermissionStatus
-import com.araujo.jordan.excuseme.view.dialog.PosPermissionDialog
+import com.araujo.jordan.excuseme.view.dialog.DialogType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -113,8 +113,8 @@ class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissio
                 .showDialogForPermission(this@InvisibleActivity)
             if (ans) {
                 when (ExcuseMe.getPosDialog().dialogType) {
-                    PosPermissionDialog.DialogType.EXPLAIN_AGAIN -> prePermission()
-                    PosPermissionDialog.DialogType.SHOW_SETTINGS -> {
+                    DialogType.EXPLAIN_AGAIN -> prePermission()
+                    DialogType.SHOW_SETTINGS -> {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         intent.data = Uri.fromParts("package", packageName, null)
                         startActivityForResult(intent, SETTINGS_REQUEST_ID)

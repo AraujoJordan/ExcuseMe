@@ -75,8 +75,9 @@ class PosPermissionDialog : ExcuseMeDialog {
         this.deniedPermissions = denied
     }
 
-    enum class DialogType {
-        EXPLAIN_AGAIN,
-        SHOW_SETTINGS
-    }
+}
+
+enum class DialogType {
+    EXPLAIN_AGAIN,
+    SHOW_SETTINGS
 }

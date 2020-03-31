@@ -87,17 +87,6 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 This method doesn't need to use a suspend function, but it uses callback.
 
-## Requesting multiple permissions
-
-You can also run multiple permissions request in the same function and syntax.
-
-```kotlin
-suspend fun lotOfPermissions() {
-	val res = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-}
-```
-
-
 ## Installation
 
 #### Step 1. Add the JitPack repository to your project build file 
@@ -126,11 +115,23 @@ And that's it!
 
 ExcuseMe is in-built with simple functions that helps user with permissions related problems.
 
+## Requesting multiple permissions
+
+You can also run multiple permissions request in the same function and syntax.
+
+```kotlin
+suspend fun lotOfPermissions() {
+	val res = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+}
+```
+
+
 ### Checking granted permissions
 
 You can use this method to check one or multiple permissions in one simple function call
 
 ```kotlin
+//single permission
 val bool = ExcuseMe.doWeHavePermissionFor(this, android.Manifest.permission.CAMERA)
 
 //You can also ask if the system have multiple permissions (Can be more than two)
@@ -141,10 +142,70 @@ val bool = ExcuseMe.doWeHavePermissionFor(this,
     )
 ```
 
+## Explain why need the permission
 
+You can explain why you need that permission. This will reduce the chances of deny and increase your
+app [Android Vitals Score](https://developer.android.com/distribute/best-practices/develop/android-vitals.html "The percentage of daily permission sessions during which users deny permissions or select Never ask again. Permission denials may indicate that people are unclear why a permission is being requested or view the request as unnecessary or unreasonable."). Apps whose metrics are higher have greater promotability, which raises their ranking in Google Play Store searches
 
+The gently() methods will explain why the app will ask the required permission
+
+```kotlin
+ ExcuseMe.couldYouGive(this).gently(
+        "Permission Request",
+        "To easily connect with family and friends, allow the app access to your contacts"
+    ).permissionFor(permission.READ_CONTACTS)
+```
+
+This can also be used with a custom implementation (without using the default dialog we provide)
+
+```kotlin
+ExcuseMe.couldYouGive(this).gently { result ->
+        val dialog = AlertDialog.Builder(this@ExampleActivity)
+        dialog.setTitle("Ask Permissions")
+        dialog.setMessage("To scan your document faster, allow the app access the camera")
+        dialog.setNegativeButton("Not now") { _, _ -> result(false) }
+        dialog.setPositiveButton("Continue") { _, _ -> result(true) }
+        dialog.setOnCancelListener { result(false) } //important
+        dialog.show()
+    }.permissionFor(permission.CAMERA)
+```
+
+## Resolve when the user denies a permission
+
+You can have a fallback when the user denies a permission, insisting and explaining why the
+required permission is necessary to continue, but always showing a "Not now" button to not block
+the user completely. It can also be a custom implementation, just like the gently() method.
+
+The please() method will insist and show a proper explanation when the user denies a permission,
+asking if the user want to try again. It's also can redirect the user to the app settings, in the case
+of the user react to put not show the permission request again.
+
+```kotlin
+ExcuseMe.couldYouGive(this).please(
+    explainAgainTitle = "Permission is necessary",
+    explainAgainExplanation = "The app need this permission to send the automatic SMS",
+    showSettingsTitle = "Set permission in Settings",
+    showSettingsExplanation = "The app will open the settings to change the permission from there"
+).permissionFor(permission.SEND_SMS)
+```
+
+This can also be used with a custom implementation (without using the default dialog we provide)
+
+```kotlin
+ExcuseMe.couldYouGive(this).please { type, result ->
+    when (type) {
+        DialogType.EXPLAIN_AGAIN -> { /** do you things**/ }
+        DialogType.SHOW_SETTINGS -> { /** do you things**/ }
+    }
+    result.invoke(true) //continue
+    // or
+    result.invoke(false) //continue
+
+}.permissionFor(permission.SEND_SMS)
+```
 
 ## License
+
 ```
 MIT License
 

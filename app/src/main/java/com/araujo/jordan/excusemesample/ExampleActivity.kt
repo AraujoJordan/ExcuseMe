@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import com.araujo.jordan.excuseme.ExcuseMe
+import com.araujo.jordan.excuseme.view.dialog.DialogType
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,7 +74,7 @@ class ExampleActivity : AppCompatActivity() {
                 ExcuseMe.couldYouGive(this@ExampleActivity)
                     .gently(
                         "Permission Request",
-                        "The app need your permission to get a phone number and others informations from the contact list"
+                        "To easily connect with family and friends, allow the app access to your contacts"
                     )
                     .permissionFor(permission.READ_CONTACTS)
                 updateTextsWithPermissions()
@@ -84,7 +85,7 @@ class ExampleActivity : AppCompatActivity() {
         //Source: https://developer.android.com/topic/performance/vitals/permissions
         cameraPermissionButton.setOnClickListener {
             ExcuseMe.couldYouGive(this)
-                .customGently { result ->
+                .gently { result ->
                     val dialog = AlertDialog.Builder(this@ExampleActivity)
                     dialog.setTitle("Ask Permissions")
                     dialog.setMessage("The app will need permission to take a picture for scan a document")
@@ -99,19 +100,33 @@ class ExampleActivity : AppCompatActivity() {
                 }
         }
 
-
         //Example of a simple permissions request with callback
         smsPermissionButton.setOnClickListener {
-            ExcuseMe.couldYouGive(this).please(
-                explainAgainTitle = "Permission is necessary",
-                explainAgainExplanation = "The app need this permission to send the automatic SMS",
-                showSettingsTitle = "Set permission in Settings",
-                showSettingsExplanation = "The app will open the settings to change the permission from there"
-            ).permissionFor(permission.SEND_SMS) {
+//            ExcuseMe.couldYouGive(this).please(
+//                explainAgainTitle = "Permission is necessary",
+//                explainAgainExplanation = "The app need this permission to send the automatic SMS",
+//                showSettingsTitle = "Set permission in Settings",
+//                showSettingsExplanation = "The app will open the settings to change the permission from there"
+//            ).permissionFor(permission.SEND_SMS) {
+//                updateTextsWithPermissions()
+//            }
+            ExcuseMe.couldYouGive(this).please { type, result ->
+                when (type) {
+                    DialogType.EXPLAIN_AGAIN -> {
+                        /** do you things**/
+                    }
+                    DialogType.SHOW_SETTINGS -> {
+                        /** do you things**/
+                    }
+                }
+                result.invoke(true) //continue
+                // or
+                result.invoke(false) //continue
+
+            }.permissionFor(permission.SEND_SMS) {
                 updateTextsWithPermissions()
             }
         }
-
     }
 
     private fun updateTextsWithPermissions() {
