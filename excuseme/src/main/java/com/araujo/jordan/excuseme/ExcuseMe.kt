@@ -28,8 +28,9 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.araujo.jordan.excuseme.model.PermissionStatus
-import com.araujo.jordan.excuseme.view.GentlyDialog
 import com.araujo.jordan.excuseme.view.InvisibleActivity
+import com.araujo.jordan.excuseme.view.dialog.PosPermissionDialog
+import com.araujo.jordan.excuseme.view.dialog.PrePermissionDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -52,7 +53,8 @@ class ExcuseMe private constructor() {
     private var permissionStatus =
         PermissionStatus()
     private var channel: Channel<Boolean>? = null
-    private var gentlyDialog: GentlyDialog? = null
+    private var preDialog = PrePermissionDialog()
+    private var posDialog = PosPermissionDialog()
 
     companion object {
 
@@ -95,6 +97,12 @@ class ExcuseMe private constructor() {
             }
         }
 
+        /**
+         * Check if the given context have granted permissions for all the strings given
+         * @param context The context. Prefer use UI context like activity, fragment, view...
+         * @param permissions One or more permissions that you want to check if have permissions
+         * @return true if user had granted permissions to all of the strings given
+         */
         fun doWeHavePermissionFor(context: Context, vararg permissions: String): Boolean {
             permissions.forEach {
                 if (ContextCompat.checkSelfPermission(context, it) !=
@@ -107,7 +115,26 @@ class ExcuseMe private constructor() {
         /**
          * This method shouldn't be used outside the ExcuseMe implementation
          */
-        fun getGentlyDialog() = this.instance.gentlyDialog
+        fun getPreDialog() = this.instance.preDialog
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun clearPreDialog() {
+            this.instance.preDialog = PrePermissionDialog()
+        }
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun getPosDialog() = this.instance.posDialog
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun clearPosDialog() {
+            this.instance.posDialog = PosPermissionDialog()
+        }
     }
 
     /**
@@ -128,25 +155,96 @@ class ExcuseMe private constructor() {
     }
 
     /**
-     * Add a dialog before ask the permission to explain the reason of asking this permission.
-     * This will help to reduce the users permissions denied that could decrease your Google
-     * Store Vitals score.
+     * This method will add a generic dialog before ask the permission for explain the reason
+     * of asking this permission. This will help to reduce the users permissions denied that
+     * could decrease your Google Store Vitals score.
      * Source: https://developer.android.com/topic/performance/vitals/permissions
      *
      * This dialog will create a text along with your explanation to clarify the usage of the
      * permission. For example, if you want permission to use the camera for scan user documents,
-     * you can simply add "scan documents for verification". So the ExcuseMe will generate a text like:
+     * you can simply add a text like:
      * "To scan documents for verification, allow YourAppName to access the permission for Camera."
      *
      * In this way, if the user deny the permission from this dialog, it won't propagate to your app
      * real permission, and you Play Store Vitals score.
      *
-     * @param explanation an array of simple explanations related to your permissions request
+     * @param explanation a simple explanation related to your permissions request
      */
-    fun gently(vararg explanation: String): ExcuseMe {
-        weakContext?.let {
-            gentlyDialog = GentlyDialog(*explanation)
-        }
+    fun gently(title: String, explanation: String): ExcuseMe {
+        preDialog =
+            PrePermissionDialog(
+                title,
+                explanation
+            )
+        return HOLDER.INSTANCE
+    }
+
+    /**
+     * This method will let the user to implement his custom dialog/something before ask the
+     * permission for explain the reason of asking this permission. This will help to reduce the
+     * users permissions denied that could decrease your Google Store Vitals score.
+     * Source: https://developer.android.com/topic/performance/vitals/permissions
+     *
+     * This dialog will create a text along with your explanation to clarify the usage of the
+     * permission. For example, if you want permission to use the camera for scan user documents,
+     * you can simply add a text like:
+     * "To scan documents for verification, allow YourAppName to access the permission for Camera."
+     *
+     * In this way, if the user deny the permission from this dialog, it won't propagate to your app
+     * real permission, and you Play Store Vitals score.
+     *
+     * @param customGentlyRequest is a callback that will run a custom user code snippet, this code
+     * snippet have to call other callback that will send a boolean to notify the ExcuseMe to continue
+     * or cancel the permission request
+     */
+    fun customGently(customGentlyRequest: ((Boolean) -> Unit) -> Unit): ExcuseMe {
+        preDialog = PrePermissionDialog(
+            customGentlyRequest
+        )
+        return HOLDER.INSTANCE
+    }
+
+    /**
+     * This method will add a generic dialog after the permission request if the permission
+     * is denied. This is a fallback to insist to ask again the permission, explaining why is
+     * necessary to continue
+     *
+     * You need to add params the title and explanations for those two situations:
+     *  1. Show permission dialog again
+     *  2. Show the settings page
+     *
+     * @param explainAgainTitle a simple title related to your permissions request and why it's necessary
+     * @param explainAgainExplanation a simple explanation related to your permissions request and why it's necessary
+     * @param showSettingsTitle a simple explanation related to your permissions request and why it's need to show the settings page
+     * @param showSettingsExplanation a simple explanation related to your permissions request and why it's need to show the settings page
+     */
+    fun please(
+        explainAgainTitle: String, explainAgainExplanation: String,
+        showSettingsTitle: String, showSettingsExplanation: String
+    ): ExcuseMe {
+        posDialog = PosPermissionDialog(
+            explainAgainTitle,
+            explainAgainExplanation,
+            showSettingsTitle,
+            showSettingsExplanation
+        )
+        return HOLDER.INSTANCE
+    }
+
+    /**
+     * This method will add a generic dialog after the permission request if the permission
+     * is denied. This is a fallback to insist to ask again the permission, explaining why is
+     * necessary to continue.
+     * You need to implement the callback for those two situations:
+     *  1. Show permission dialog again
+     *  2. Show the settings page
+     *
+     * @param customDialogRequest is a lambda callback that will run a custom user code snippet, this code
+     * snippet will tell wich situation is and will wait the boolean to notify the ExcuseMe to continue
+     * or cancel
+     */
+    fun customPlease(customDialogRequest: ((type: PosPermissionDialog.DialogType, ((Boolean) -> Unit)) -> Unit)): ExcuseMe {
+        posDialog = PosPermissionDialog(customDialogRequest)
         return HOLDER.INSTANCE
     }
 
@@ -170,6 +268,10 @@ class ExcuseMe private constructor() {
 
             if (deniedPerm.isEmpty()) {
                 permissionStatus = PermissionStatus(granted = permissions.toMutableList())
+                weakContext?.clear()
+                weakContext = null
+                preDialog = PrePermissionDialog()
+                posDialog = PosPermissionDialog()
                 return permissionStatus
             } else {
                 context.startActivity(Intent(context, InvisibleActivity::class.java).apply {

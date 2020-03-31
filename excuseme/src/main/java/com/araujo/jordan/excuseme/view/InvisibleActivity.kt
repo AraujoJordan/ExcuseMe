@@ -21,13 +21,17 @@
 
 package com.araujo.jordan.excuseme.view
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
 import com.araujo.jordan.excuseme.ExcuseMe
 import com.araujo.jordan.excuseme.model.PermissionStatus
+import com.araujo.jordan.excuseme.view.dialog.PosPermissionDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,22 +43,20 @@ import kotlinx.coroutines.launch
 class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
     private val PERMISSIONS_REQUEST_ID = 4002
+    private val SETTINGS_REQUEST_ID = 4009
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-        intent.getStringArrayExtra("permissions")?.let { permissions ->
-            CoroutineScope(Dispatchers.Main.immediate).launch {
-                val showPermission = ExcuseMe.getGentlyDialog()
-                    ?.showDialogForPermission(this@InvisibleActivity, *permissions) ?: false
-                if (showPermission)
-                    ActivityCompat.requestPermissions(
-                        this@InvisibleActivity,
-                        permissions,
-                        PERMISSIONS_REQUEST_ID
-                    )
-            }
+        CoroutineScope(Dispatchers.Main.immediate).launch {
+            prePermission()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (SETTINGS_REQUEST_ID == requestCode) CoroutineScope(Dispatchers.Main.immediate).launch {
+            posPermission()
         }
     }
 
@@ -63,18 +65,69 @@ class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissio
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        CoroutineScope(Dispatchers.Main.immediate).launch {
+            posPermission()
+        }
+    }
+
+    private suspend fun prePermission() {
+        Log.d("InvisibleActivity", "prePermission()")
+
+        intent.getStringArrayExtra("permissions")?.let { permissions ->
+
+            val showPermission =
+                if (ExcuseMe.getPreDialog().showDialog) {
+                    ExcuseMe.getPreDialog().showDialogForPermission(this@InvisibleActivity)
+                } else {
+                    true
+                }
+
+            ExcuseMe.clearPreDialog()
+
+            if (showPermission)
+                ActivityCompat.requestPermissions(
+                    this@InvisibleActivity,
+                    permissions,
+                    PERMISSIONS_REQUEST_ID
+                )
+            else
+                finish()
+        }
+    }
+
+    private suspend fun posPermission() {
         val permissionStatus = PermissionStatus()
+
         intent.getStringArrayExtra("permissions")?.forEach {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, it))
-                permissionStatus.askGently.add(it)
-            when (PermissionChecker.checkSelfPermission(this, it)) {
-                PermissionChecker.PERMISSION_GRANTED -> permissionStatus.granted.add(it)
-                else -> permissionStatus.denied.add(it)
+            if (ExcuseMe.doWeHavePermissionFor(this, it))
+                permissionStatus.granted.add(it)
+            else
+                permissionStatus.denied.add(it)
+        }
+
+
+        //This will make the ExcuseMe insist for the user give the asked permission
+        if (ExcuseMe.getPosDialog().showDialog && permissionStatus.denied.isNotEmpty()) {
+            ExcuseMe.getPosDialog().setPermissions(permissionStatus.denied)
+            val ans = ExcuseMe.getPosDialog()
+                .showDialogForPermission(this@InvisibleActivity)
+            if (ans) {
+                when (ExcuseMe.getPosDialog().dialogType) {
+                    PosPermissionDialog.DialogType.EXPLAIN_AGAIN -> prePermission()
+                    PosPermissionDialog.DialogType.SHOW_SETTINGS -> {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.fromParts("package", packageName, null)
+                        startActivityForResult(intent, SETTINGS_REQUEST_ID)
+                    }
+                }
+                return
+            } else {
+                ExcuseMe.clearPosDialog()
             }
         }
-        ExcuseMe.onPermissionResult(
-            permissionStatus
-        )
+
+        ExcuseMe.clearPosDialog()
+        ExcuseMe.onPermissionResult(permissionStatus)
         finish()
     }
 

@@ -2,9 +2,4 @@
 <resources>
     <string name="excuseme_not_now_button">Not now</string>
     <string name="excuseme_continue_button">Continue</string>
-
-    <string name="excuseme_gently_description">To %1$s, allow %2$s to access permission for %3$s</string>
-    <string name="separator">,</string>
-    <string name="trailingSeparator">and</string>
-    <string name="write">change the</string>
 </resources>

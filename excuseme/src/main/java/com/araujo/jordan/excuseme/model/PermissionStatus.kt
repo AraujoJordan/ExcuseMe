@@ -24,8 +24,7 @@ package com.araujo.jordan.excuseme.model
 /**
  * Data class that hold the permissions results.
  */
-open class PermissionStatus(
-    open var granted: MutableList<String> = mutableListOf(),
-    open var denied: MutableList<String> = mutableListOf(),
-    open var askGently: MutableList<String> = mutableListOf()
+data class PermissionStatus(
+    var granted: MutableList<String> = mutableListOf(),
+    var denied: MutableList<String> = mutableListOf()
 )
