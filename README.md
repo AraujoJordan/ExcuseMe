@@ -23,6 +23,7 @@ ExcuseMe is an Android library that provides an one-line implementation for andr
 ## Usage
 
 ExcuseMe is easier way to implement Permissions in Android. But you still have to add the permission in the AndroidManifest.xml file.
+
 ![AndroidManifest.xml location](/doc/manifestLocation.webp "AndroidManifest.xml location")
 
 ```xml
@@ -30,7 +31,7 @@ ExcuseMe is easier way to implement Permissions in Android. But you still have t
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="your.package.name">
 
-    <!-- Add you permission here-->
+    <!-- Add your permission here-->
     <uses-permission android:name="android.permission.CAMERA" />
     
     <application
@@ -41,8 +42,9 @@ ExcuseMe is easier way to implement Permissions in Android. But you still have t
 </manifest>
 ```
 
-You can find the complete list of permissions on [this documentation](https://developer.android.com/reference/android/Manifest.permission "Manifest Permissions")
-And than, you can use on of the two implementations bellow to add the permission properly:
+You can find the complete list of permissions on [this documentation](https://developer.android.com/reference/android/Manifest.permission "Manifest Permissions").
+
+After that, you can use on of the two implementations bellow to add the permission properly:
 
 1. [The Simple one-line Usage](#onelineusage)
 2. [Kotlin Lambda Callback Usage](#lambdacallback)
