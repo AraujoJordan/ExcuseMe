@@ -7,7 +7,7 @@ Because we don't need to be rude for asking permissions
 
 ExcuseMe is an Android library that provides an one-line implementation for android permissions made with Kotlin.
 
-## Why you should use ExcuseMe?
+## 🚀 Why you should use ExcuseMe?
 
 1. Better performance with Kotlin Coroutines
    * A better performance in comparison with other libraries that use Thread as it uses less memory have better performance than threads for small async/ui thread changes.
@@ -20,7 +20,7 @@ ExcuseMe is an Android library that provides an one-line implementation for andr
 5. Polite way to ask for requests
    * Because we don't need to be rude for asking permissions
 
-## Usage
+## 📖 Usage
 
 ExcuseMe is easier way to implement Permissions in Android. But you still have to add the permission in the AndroidManifest.xml file.
 
@@ -87,7 +87,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 This method doesn't need to use a suspend function, but it uses callback.
 
-## Installation
+## 📦 Installation
 
 #### Step 1. Add the JitPack repository to your project build file 
 
@@ -111,7 +111,7 @@ dependencies {
 
 And that's it!
 
-## Extras
+## 🌟 Extras
 
 ExcuseMe is in-built with simple functions that helps user with permissions related problems.
 
@@ -204,7 +204,7 @@ ExcuseMe.couldYouGive(this).please { type, result ->
 }.permissionFor(permission.SEND_SMS)
 ```
 
-## License
+## 📄 License
 
 ```
 MIT License
