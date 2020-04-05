@@ -5,8 +5,10 @@ jobs:
       - image: circleci/android:api-29
     environment:
       - TERM: dumb
-      - JVM_OPTS: -Xmx1024m
-      - _JAVA_OPTIONS: "-Xmx1024m"
+      - CODECOV_TOKEN: 339a1a45-8a78-4758-96e9-63b590be7b55
+      - COV_REPORT_LOCATION: excuseme/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml
+      - JVM_OPTS: -Xmx2048m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
+      - _JAVA_OPTIONS: "-Xmx2048m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
     steps:
       - checkout
       - restore_cache:
