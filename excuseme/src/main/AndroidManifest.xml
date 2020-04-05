@@ -2,6 +2,12 @@
     package="com.araujo.jordan.excuseme">
 
     <application>
+        <uses-library
+            android:name="android.test.base"
+            android:required="false" />
+        <uses-library
+            android:name="android.test.mock"
+            android:required="false" />
         <activity
             android:name=".view.InvisibleActivity"
             android:theme="@style/ExcuseMe.Theme.Transparent" />
