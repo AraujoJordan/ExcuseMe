@@ -1,8 +1,11 @@
-version: 2
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     docker:
       - image: circleci/android:api-29
+    parallelism: 2
     environment:
       - TERM: dumb
       - CODECOV_TOKEN: 339a1a45-8a78-4758-96e9-63b590be7b55
@@ -30,3 +33,5 @@ jobs:
       - store_artifacts:
           path: excuseme/build/reports
           destination: reports
+      - codecov/upload:
+          file: excuseme/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml
