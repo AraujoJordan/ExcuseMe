@@ -33,8 +33,5 @@ jobs:
       - store_artifacts:
           path: excuseme/build/reports
           destination: reports
-      - store_test_results:
-        jacoco:
-          path: excuseme/build/reports
       - codecov/upload:
           file: excuseme/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml
