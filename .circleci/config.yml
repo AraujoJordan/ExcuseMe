@@ -29,9 +29,9 @@ jobs:
           command: ./gradlew :excuseme:lint
       - run:
           name: Run Tests
-          command: ./gradlew :excuseme:jacocoTestReport
+          command: ./gradlew :excuseme:jacocoTestReportDebug
       - store_artifacts:
           path: excuseme/build/reports
           destination: reports
       - codecov/upload:
-          file: excuseme/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml
+          file: excuseme/build/test-results/testDebugUnitTest/TEST-com.araujo.jordan.excuseme.CheckPermissionsTest.xml
