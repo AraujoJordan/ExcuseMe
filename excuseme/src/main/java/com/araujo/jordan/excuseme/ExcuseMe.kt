@@ -259,6 +259,16 @@ class ExcuseMe private constructor() {
     suspend fun permissionFor(vararg permission: String) = runPermissionRequest(*permission)
 
     /**
+     * Ask permission for one or multiple permissions and start the permission dialog
+     * This method use async return from Kotlin Coroutines and can be used without callbacks
+     *
+     * @param permission one or multiple permissions from android.Manifest.permission.* strings
+     * @return boolean that holds the result with the granted/refused permission
+     */
+    suspend fun permissionFor(permission: String) =
+        runPermissionRequest(permission).granted.contains(permission)
+
+    /**
      * Calls the InvisibleActivity that makes the Permission request. The channel will
      * listen for the completePermission()
      */

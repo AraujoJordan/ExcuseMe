@@ -50,13 +50,12 @@ class ExampleActivity : AppCompatActivity() {
         //and using the permission answer to update screen.
         calendarPermissionButton.setOnClickListener {
             CoroutineScope(Dispatchers.Main.immediate).launch {
-
                 val res =
                     ExcuseMe.couldYouGive(this@ExampleActivity)
                         .permissionFor(permission.WRITE_CALENDAR)
 
                 calendarPermissionsFeedback?.apply {
-                    if (res.granted.contains(permission.WRITE_CALENDAR)) {
+                    if (res) {
                         text = granted
                         setTextColor(green.defaultColor)
                     } else {

@@ -59,8 +59,7 @@ This implementation uses [suspend functions](https://kotlinlang.org/docs/referen
 
 ```kotlin
 suspend fun cameraUsage() {
-	val res = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
-	if(res.granted.contains(android.Manifest.permission.CAMERA)) {
+	if(ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA) {
 		//Do your camera stuffs
 	}
 }
