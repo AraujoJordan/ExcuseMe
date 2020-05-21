@@ -8,7 +8,10 @@ Because we don't need to be rude for asking permissions
 
 ExcuseMe is an Android library that provides an one-line implementation for android permissions made with Kotlin.
 
-![](doc/assets/excuseme.gif)
+```kotlin
+val granted : Boolean = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
+```
+![](doc/excuseme.gif)
 
 ## 🚀 Why you should use ExcuseMe?
 
