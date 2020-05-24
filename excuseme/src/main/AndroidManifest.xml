@@ -10,6 +10,7 @@
             android:required="false" />
         <activity
             android:name=".view.InvisibleActivity"
+            android:launchMode="singleInstance"
             android:theme="@style/ExcuseMe.Theme.Transparent" />
     </application>
 </manifest>

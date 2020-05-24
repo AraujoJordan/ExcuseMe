@@ -1,7 +1,9 @@
 package com.araujo.jordan.excusemesample
 
 import android.Manifest.permission
+import android.database.Cursor
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +14,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 class ExampleActivity : AppCompatActivity() {
 
@@ -26,6 +29,8 @@ class ExampleActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         updateTextsWithPermissions()
+
+        ExcuseMe.couldYouHandlePermissionsForMe(this) { accept -> if (accept) updateTextsWithPermissions() }
 
         //Example of a simple permissions request with callback
         audioPermissionButton.setOnClickListener {
@@ -66,16 +71,41 @@ class ExampleActivity : AppCompatActivity() {
             }
         }
 
+//        //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
+//        //Source: https://developer.android.com/topic/performance/vitals/permissions
+//        contactsPermissionButton.setOnClickListener {
+//            CoroutineScope(Dispatchers.Main.immediate).launch {
+//                ExcuseMe.couldYouGive(this@ExampleActivity)
+//                    .gently(
+//                        "Permission Request",
+//                        "To easily connect with family and friends, allow the app access to your contacts"
+//                    )
+//                    .permissionFor(permission.READ_CONTACTS)
+//                updateTextsWithPermissions()
+//            }
+//        }
+
         //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
         //Source: https://developer.android.com/topic/performance/vitals/permissions
         contactsPermissionButton.setOnClickListener {
             CoroutineScope(Dispatchers.Main.immediate).launch {
-                ExcuseMe.couldYouGive(this@ExampleActivity)
-                    .gently(
-                        "Permission Request",
-                        "To easily connect with family and friends, allow the app access to your contacts"
-                    )
-                    .permissionFor(permission.READ_CONTACTS)
+                val phones: Cursor? = contentResolver.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+                )
+                while (phones?.moveToNext() != false) {
+                    val name =
+                        phones?.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                    val number =
+                        phones?.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+                    println("name:${name} number:$number")
+                }
+                phones.close()
+
                 updateTextsWithPermissions()
             }
         }
@@ -101,14 +131,6 @@ class ExampleActivity : AppCompatActivity() {
 
         //Example of a simple permissions request with callback
         smsPermissionButton.setOnClickListener {
-//            ExcuseMe.couldYouGive(this).please(
-//                explainAgainTitle = "Permission is necessary",
-//                explainAgainExplanation = "The app need this permission to send the automatic SMS",
-//                showSettingsTitle = "Set permission in Settings",
-//                showSettingsExplanation = "The app will open the settings to change the permission from there"
-//            ).permissionFor(permission.SEND_SMS) {
-//                updateTextsWithPermissions()
-//            }
             ExcuseMe.couldYouGive(this).please { type, result ->
                 when (type) {
                     DialogType.EXPLAIN_AGAIN -> {
@@ -118,10 +140,6 @@ class ExampleActivity : AppCompatActivity() {
                         /** do you things**/
                     }
                 }
-                result.invoke(true) //continue
-                // or
-                result.invoke(false) //continue
-
             }.permissionFor(permission.SEND_SMS) {
                 updateTextsWithPermissions()
             }

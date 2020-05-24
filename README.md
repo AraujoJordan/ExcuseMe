@@ -52,26 +52,41 @@ You can find the complete list of permissions on [this documentation](https://de
 
 After that, you can use on of the two implementations bellow to add the permission properly:
 
-1. [The Simple one-line Usage](#onelineusage)
-2. [Kotlin Lambda Callback Usage](#lambdacallback)
+1. [The Simple one line Usage](#onelineusage)
+2. [Auto Permission One line Handling](#automagically)
+3. [Kotlin Lambda Callback Usage](#lambdacallback)
 
 
-### <a name='onelineusage'></a>Simple one-line Usage
+### <a name='onelineusage'></a>1. Simple one line Usage
 
 This implementation uses [suspend functions](https://kotlinlang.org/docs/reference/coroutines/composing-suspending-functions.html#composing-suspending-functions "Composing Suspending Functions") to make it easier the permission request. It will listen async the permission dialog response, so it won't pause the UI.
 
 ```kotlin
 suspend fun cameraUsage() {
-	if(ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA) {
-		//Do your camera stuffs
-	}
+    if(ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA) {
+        //Do your camera stuffs
+    }
 }
 ```
 And that's it. No more override the onRequestPermissionsResult() implementation on your activity, no more class-scope variables to keep what you want for the permission result, and no more others boilerplate to maintain in your code.
 
 If you want to learn more of how to use Suspend functions, I recommend [this video](https://www.youtube.com/watch?v=IQf-vtIC-Uc "Android Developers") to understand it.
+### <a name='automagically'></a>2. Auto Permission Handling
 
-### <a name='lambdacallback'></a>Kotlin Lambda Callback Usage
+This one line implementation listen and ask the permissions automagically for you.
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+
+    ExcuseMe.couldYouHandlePermissionsForMe(this) { accept ->  if(accept) openCamera() }
+
+    openCamera()
+}
+```
+
+### <a name='lambdacallback'></a>3. Kotlin Lambda Callback Usage
 
 This implementation uses [trailing lambdas callbacks](https://kotlinlang.org/docs/reference/lambdas.html#passing-a-lambda-to-the-last-parameter "Passing trailing lambdas"), so it will be natural like as an OnClickListener implementation. 
 

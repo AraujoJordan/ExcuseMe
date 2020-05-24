@@ -25,6 +25,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.araujo.jordan.excuseme.model.PermissionStatus
@@ -42,6 +43,8 @@ import java.lang.ref.WeakReference
 /**
  * This class is a singleton and it holds the control of the Android Runtime permissions using
  * an InvisibleActivity for make the request and Coroutines to handle async the result
+ *
+ * @author Jordan L. Araujo Jr. (araujojordan)
  */
 class ExcuseMe private constructor() {
 
@@ -83,6 +86,48 @@ class ExcuseMe private constructor() {
         fun couldYouGive(context: Context): ExcuseMe {
             HOLDER.INSTANCE.weakContext = WeakReference(context)
             return instance
+        }
+
+        /**
+         * Handle permissions automagically using the Thread.UncaughtExceptionHandler
+         * @param activity the activity that the ExcuseMe will listen for permissions
+         * @param afterPermissionsRequest the callback that will run after the permission result
+         * @return the callback will return true if the user granted all the permissions
+         */
+        fun couldYouHandlePermissionsForMe(
+            activity: Activity,
+            afterPermissionRequest: (Boolean) -> Unit
+        ) {
+            try {
+                Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
+                    activity,
+                    (activity as? AppCompatActivity)?.lifecycle,
+                    afterPermissionRequest
+                )
+            } catch (err: Exception) {
+                println("Can't do it automatically: ${err.message}")
+            }
+        }
+
+        /**
+         * Handle permissions automagically using the Thread.UncaughtExceptionHandler
+         * @param fragment the fragment that the ExcuseMe will listen for permissions
+         * @param afterPermissionsRequest the callback that will run after the permission result
+         * @return the callback will return true if the user granted all the permissions
+         */
+        fun couldYouHandlePermissionsForMe(
+            fragment: Fragment,
+            afterPermissionsRequest: (Boolean) -> Unit
+        ) {
+            try {
+                Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
+                    fragment.requireActivity(),
+                    fragment.lifecycle,
+                    afterPermissionsRequest
+                )
+            } catch (err: Exception) {
+                println("Can't do it automatically: ${err.message}")
+            }
         }
 
         /**

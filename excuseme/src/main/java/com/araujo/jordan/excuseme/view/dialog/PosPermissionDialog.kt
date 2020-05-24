@@ -1,5 +1,27 @@
+/**
+ *
+ * Copyright © 2020 Jordan Lira de Araujo Junior
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+ * associated documentation files (the “Software”), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
 package com.araujo.jordan.excuseme.view.dialog
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.araujo.jordan.excuseme.R
@@ -7,6 +29,11 @@ import com.araujo.jordan.excuseme.utils.DesignUtils
 import com.araujo.jordan.excuseme.view.InvisibleActivity
 import kotlinx.android.synthetic.main.dialog_gently_ask.view.*
 
+/**
+ * Implementation Dialog to explain the reason for the permission should be granted.
+ * This dialog will only be showed if the user denied a permission
+ * @author Jordan L. Araujo Jr. (araujojordan)
+ */
 class PosPermissionDialog : ExcuseMeDialog {
 
     private var customRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)? = null
@@ -31,6 +58,7 @@ class PosPermissionDialog : ExcuseMeDialog {
     private var deniedPermissions = listOf<String>()
     var dialogType: DialogType = DialogType.EXPLAIN_AGAIN
 
+    @SuppressLint("InflateParams")
     override suspend fun showDialogForPermission(act: InvisibleActivity): Boolean {
 
         dialogType = if (deniedPermissions.firstOrNull {
