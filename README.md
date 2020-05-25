@@ -17,14 +17,16 @@ val granted : Boolean = ExcuseMe.couldYouGive(this).permissionFor(android.Manife
 ## 🚀 Why you should use ExcuseMe?
 
 1. Better performance with Kotlin Coroutines
-   * A better performance in comparison with other libraries that use Thread as it uses less memory have better performance than threads for small async/ui thread changes.
+   * Coroutines uses less memory have better performance than threads for small async/ui thread changes.
 2. One-line permission request
    * ExcuseMe can be used with Kotlin Suspending functions that gives a better syntax and better code readability
 3. No more interface listeners to implement
-   * With ExcuseMe, you don't need to implement callbacks interfaces that it just add boilerplate code to maintain
+   * You don't need to implement callbacks interfaces that it just add boilerplate code to maintain
 4. It can be used with lambda callbacks
    * If you don't know how to implement suspend functions, ExcuseMe could be used with Kotlin lambda callbacks
-5. Polite way to ask for requests
+5. Handling uncaught permissions automatically
+   * You can use this one line method to ask permissions automatically. No more SecurityException because of permissions!
+6. Polite way to ask for requests
    * Because we don't need to be rude for asking permissions
 
 ## 📖 Usage
