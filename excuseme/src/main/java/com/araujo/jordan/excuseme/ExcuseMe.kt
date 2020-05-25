@@ -48,27 +48,21 @@ import java.lang.ref.WeakReference
  */
 class ExcuseMe private constructor() {
 
-    //Holds ExcuseMe Singleton for return the permissions
-    private object HOLDER {
-        val INSTANCE = ExcuseMe()
-    }
-
     private var weakContext: WeakReference<Context>? = null
-    private var permissionStatus =
-        PermissionStatus()
+    private var permissionStatus = PermissionStatus()
     private var channel: Channel<Boolean>? = null
     private var preDialog = PrePermissionDialog()
     private var posDialog = PosPermissionDialog()
 
     companion object {
 
-        private val instance: ExcuseMe by lazy { HOLDER.INSTANCE }
+        private val instance by lazy { ExcuseMe() }
 
         /**
          * Set the activity that will be used to call the invisible activity
          */
         fun couldYouGive(activity: Activity): ExcuseMe {
-            HOLDER.INSTANCE.weakContext = WeakReference(activity)
+            instance.weakContext = WeakReference(activity)
             return instance
         }
 
@@ -76,7 +70,7 @@ class ExcuseMe private constructor() {
          * Set the fragment that will be used to call the invisible activity
          */
         fun couldYouGive(fragment: Fragment): ExcuseMe {
-            HOLDER.INSTANCE.weakContext = WeakReference(fragment.requireActivity())
+            instance.weakContext = WeakReference(fragment.requireActivity())
             return instance
         }
 
@@ -84,7 +78,7 @@ class ExcuseMe private constructor() {
          * Set the context that will be used to call the invisible activity
          */
         fun couldYouGive(context: Context): ExcuseMe {
-            HOLDER.INSTANCE.weakContext = WeakReference(context)
+            instance.weakContext = WeakReference(context)
             return instance
         }
 
@@ -135,11 +129,11 @@ class ExcuseMe private constructor() {
          * @param permissionResult the permissions result that come from the InvisibleActivity
          */
         fun onPermissionResult(permissionResult: PermissionStatus) {
-            HOLDER.INSTANCE.permissionStatus = permissionResult
+            instance.permissionStatus = permissionResult
             CoroutineScope(Dispatchers.Main.immediate).launch {
-                HOLDER.INSTANCE.channel?.send(true)
-                HOLDER.INSTANCE.weakContext?.clear()
-                HOLDER.INSTANCE.weakContext = null
+                instance.channel?.send(true)
+                instance.weakContext?.clear()
+                instance.weakContext = null
             }
         }
 
@@ -222,7 +216,7 @@ class ExcuseMe private constructor() {
                 title,
                 explanation
             )
-        return HOLDER.INSTANCE
+        return instance
     }
 
     /**
@@ -247,7 +241,7 @@ class ExcuseMe private constructor() {
         preDialog = PrePermissionDialog(
             customGentlyRequest
         )
-        return HOLDER.INSTANCE
+        return instance
     }
 
     /**
@@ -274,7 +268,7 @@ class ExcuseMe private constructor() {
             showSettingsTitle,
             showSettingsExplanation
         )
-        return HOLDER.INSTANCE
+        return instance
     }
 
     /**
@@ -291,7 +285,7 @@ class ExcuseMe private constructor() {
      */
     fun please(customDialogRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)): ExcuseMe {
         posDialog = PosPermissionDialog(customDialogRequest)
-        return HOLDER.INSTANCE
+        return instance
     }
 
     /**
@@ -338,6 +332,6 @@ class ExcuseMe private constructor() {
                 channel = null
             }
         }
-        return HOLDER.INSTANCE.permissionStatus
+        return instance.permissionStatus
     }
 }
