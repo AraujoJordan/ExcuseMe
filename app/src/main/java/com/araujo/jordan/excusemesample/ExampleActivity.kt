@@ -1,4 +1,4 @@
-package com.araujo.jordan.ExcuseMe
+package com.araujo.jordan.excusemesample
 
 import com.araujo.jordan.excuseme.ExcuseMe
 import android.Manifest.permission
@@ -10,12 +10,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import com.araujo.jordan.excuseme.view.dialog.DialogType
-import com.araujo.jordan.excusemesample.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 class ExampleActivity : AppCompatActivity() {
 
@@ -31,18 +29,18 @@ class ExampleActivity : AppCompatActivity() {
 
         updateTextsWithPermissions()
 
-        ExcuseMe().couldYouHandlePermissionsForMe(this) { accept -> if (accept) updateTextsWithPermissions() }
+        ExcuseMe.couldYouHandlePermissionsForMe(this) { accept -> if (accept) updateTextsWithPermissions() }
 
         //Example of a simple permissions request with callback
         audioPermissionButton.setOnClickListener {
-            ExcuseMe().couldYouGive(this).permissionFor(permission.RECORD_AUDIO) {
+            ExcuseMe.couldYouGive(this).permissionFor(permission.RECORD_AUDIO) {
                 updateTextsWithPermissions()
             }
         }
 
         //Example of multiple permissions request.
         multiplePermissionsButton.setOnClickListener {
-            ExcuseMe().couldYouGive(this).permissionFor(
+            ExcuseMe.couldYouGive(this).permissionFor(
                 permission.READ_CONTACTS,
                 permission.CAMERA,
                 permission.RECORD_AUDIO,
@@ -57,7 +55,7 @@ class ExampleActivity : AppCompatActivity() {
         calendarPermissionButton.setOnClickListener {
             CoroutineScope(Dispatchers.Main.immediate).launch {
                 val res =
-                    ExcuseMe().couldYouGive(this@ExampleActivity)
+                    ExcuseMe.couldYouGive(this@ExampleActivity)
                         .permissionFor(permission.WRITE_CALENDAR)
 
                 calendarPermissionsFeedback?.apply {
@@ -76,7 +74,7 @@ class ExampleActivity : AppCompatActivity() {
 //        //Source: https://developer.android.com/topic/performance/vitals/permissions
 //        contactsPermissionButton.setOnClickListener {
 //            CoroutineScope(Dispatchers.Main.immediate).launch {
-//                ExcuseMe().couldYouGive(this@ExampleActivity)
+//                ExcuseMe.couldYouGive(this@ExampleActivity)
 //                    .gently(
 //                        "Permission Request",
 //                        "To easily connect with family and friends, allow the app access to your contacts"
@@ -114,7 +112,7 @@ class ExampleActivity : AppCompatActivity() {
         //Example of a CUSTOM dialog BEFORE ask the permissions. This is good for your Play Store Vitals
         //Source: https://developer.android.com/topic/performance/vitals/permissions
         cameraPermissionButton.setOnClickListener {
-            ExcuseMe().couldYouGive(this)
+            ExcuseMe.couldYouGive(this)
                 .gently { result ->
                     val dialog = AlertDialog.Builder(this@ExampleActivity)
                     dialog.setTitle("Ask Permissions")
@@ -132,7 +130,7 @@ class ExampleActivity : AppCompatActivity() {
 
         //Example of a simple permissions request with callback
         smsPermissionButton.setOnClickListener {
-            ExcuseMe().couldYouGive(this).please { type, result ->
+            ExcuseMe.couldYouGive(this).please { type, result ->
                 when (type) {
                     DialogType.EXPLAIN_AGAIN -> {
                         /** do you things**/
@@ -157,7 +155,7 @@ class ExampleActivity : AppCompatActivity() {
 
     private fun changeTextViewWithPermission(textView: TextView?, permission: String) {
         textView?.apply {
-            if (ExcuseMe().doWeHavePermissionFor(textView.context, permission)) {
+            if (ExcuseMe.doWeHavePermissionFor(textView.context, permission)) {
                 text = granted
                 setTextColor(green.defaultColor)
             } else {

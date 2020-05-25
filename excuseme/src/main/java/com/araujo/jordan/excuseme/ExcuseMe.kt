@@ -47,286 +47,289 @@ import java.lang.ref.WeakReference
  */
 class ExcuseMe {
 
-    private var weakContext: WeakReference<Context>? = null
-    private var permissionStatus = PermissionStatus()
-    private var channel: Channel<Boolean>? = null
-    private var preDialog = PrePermissionDialog()
-    private var posDialog = PosPermissionDialog()
+    companion object {
 
-    /**
-     * Set the activity that will be used to call the invisible activity
-     */
-    fun couldYouGive(activity: Activity): ExcuseMe {
-        weakContext = WeakReference(activity)
-        return this
-    }
+        private var weakContext: WeakReference<Context>? = null
+        private var permissionStatus = PermissionStatus()
+        private var channel: Channel<Boolean>? = null
+        private var preDialog = PrePermissionDialog()
+        private var posDialog = PosPermissionDialog()
 
-    /**
-     * Set the fragment that will be used to call the invisible activity
-     */
-    fun couldYouGive(fragment: Fragment): ExcuseMe {
-        weakContext = WeakReference(fragment.requireActivity())
-        return this
-    }
-
-    /**
-     * Set the context that will be used to call the invisible activity
-     */
-    fun couldYouGive(context: Context): ExcuseMe {
-        weakContext = WeakReference(context)
-        return this
-    }
-
-    /**
-     * Handle permissions automagically using the Thread.UncaughtExceptionHandler
-     * @param activity the activity that the ExcuseMe will listen for permissions
-     * @param afterPermissionsRequest the callback that will run after the permission result
-     * @return the callback will return true if the user granted all the permissions
-     */
-    fun couldYouHandlePermissionsForMe(
-        activity: Activity,
-        afterPermissionRequest: (Boolean) -> Unit
-    ) {
-        try {
-            Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
-                activity,
-                (activity as? AppCompatActivity)?.lifecycle,
-                afterPermissionRequest
-            )
-        } catch (err: Exception) {
-            println("Can't do it automatically: ${err.message}")
+        /**
+         * Set the activity that will be used to call the invisible activity
+         */
+        fun couldYouGive(activity: Activity): ExcuseMe.Companion {
+            weakContext = WeakReference(activity)
+            return this
         }
-    }
 
-    /**
-     * Handle permissions automagically using the Thread.UncaughtExceptionHandler
-     * @param fragment the fragment that the ExcuseMe will listen for permissions
-     * @param afterPermissionsRequest the callback that will run after the permission result
-     * @return the callback will return true if the user granted all the permissions
-     */
-    fun couldYouHandlePermissionsForMe(
-        fragment: Fragment,
-        afterPermissionsRequest: (Boolean) -> Unit
-    ) {
-        try {
-            Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
-                fragment.requireActivity(),
-                fragment.lifecycle,
-                afterPermissionsRequest
-            )
-        } catch (err: Exception) {
-            println("Can't do it automatically: ${err.message}")
+        /**
+         * Set the fragment that will be used to call the invisible activity
+         */
+        fun couldYouGive(fragment: Fragment): ExcuseMe.Companion {
+            weakContext = WeakReference(fragment.requireActivity())
+            return this
         }
-    }
 
-    /**
-     * Callback to continue with the result from the permissions requests
-     * @param permissionResult the permissions result that come from the InvisibleActivity
-     */
-    fun onPermissionResult(permissionResult: PermissionStatus) {
-        permissionStatus = permissionResult
-        CoroutineScope(Dispatchers.Main.immediate).launch {
-            channel?.send(true)
-            weakContext?.clear()
-            weakContext = null
+        /**
+         * Set the context that will be used to call the invisible activity
+         */
+        fun couldYouGive(context: Context): ExcuseMe.Companion {
+            weakContext = WeakReference(context)
+            return this
         }
-    }
 
-    /**
-     * Check if the given context have granted permissions for all the strings given
-     * @param context The context. Prefer use UI context like activity, fragment, view...
-     * @param permissions One or more permissions that you want to check if have permissions
-     * @return true if user had granted permissions to all of the strings given
-     */
-    fun doWeHavePermissionFor(context: Context, vararg permissions: String): Boolean {
-        permissions.forEach {
-            if (ContextCompat.checkSelfPermission(context, it) !=
-                PackageManager.PERMISSION_GRANTED
-            ) return false
-        }
-        return true
-    }
-
-    /**
-     * This method shouldn't be used outside the ExcuseMe implementation
-     */
-    fun getPreDialog() = preDialog
-
-    /**
-     * This method shouldn't be used outside the ExcuseMe implementation
-     */
-    fun clearPreDialog() {
-        preDialog = PrePermissionDialog()
-    }
-
-    /**
-     * This method shouldn't be used outside the ExcuseMe implementation
-     */
-    fun getPosDialog() = posDialog
-
-    /**
-     * This method shouldn't be used outside the ExcuseMe implementation
-     */
-    fun clearPosDialog() {
-        posDialog = PosPermissionDialog()
-    }
-
-
-    /**
-     * Ask permission for one or multiple permissions and start the permission dialog
-     * This method use callback and can be used with Kotlin callback syntax
-     *
-     * @param permission one or multiple permissions from android.Manifest.permission.* strings
-     * @param completion callback with PermissionStatus object that holds the result
-     * @return Return nothing, but the completion callback have the PermissionStatus object that
-     * holds the result
-     */
-    fun permissionFor(
-        vararg permission: String,
-        completion: (permissionStatus: PermissionStatus) -> Unit
-    ) = CoroutineScope(Dispatchers.Main.immediate).launch {
-        val req = runPermissionRequest(*permission)
-        completion(req)
-    }
-
-    /**
-     * This method will add a generic dialog before ask the permission for explain the reason
-     * of asking this permission. This will help to reduce the users permissions denied that
-     * could decrease your Google Store Vitals score.
-     * Source: https://developer.android.com/topic/performance/vitals/permissions
-     *
-     * This dialog will create a text along with your explanation to clarify the usage of the
-     * permission. For example, if you want permission to use the camera for scan user documents,
-     * you can simply add a text like:
-     * "To scan documents for verification, allow YourAppName to access the permission for Camera."
-     *
-     * In this way, if the user deny the permission from this dialog, it won't propagate to your app
-     * real permission, and you Play Store Vitals score.
-     *
-     * @param explanation a simple explanation related to your permissions request
-     */
-    fun gently(title: String, explanation: String): ExcuseMe {
-        preDialog =
-            PrePermissionDialog(
-                title,
-                explanation
-            )
-        return this
-    }
-
-    /**
-     * This method will let the user to implement his custom dialog/something before ask the
-     * permission for explain the reason of asking this permission. This will help to reduce the
-     * users permissions denied that could decrease your Google Store Vitals score.
-     * Source: https://developer.android.com/topic/performance/vitals/permissions
-     *
-     * This dialog will create a text along with your explanation to clarify the usage of the
-     * permission. For example, if you want permission to use the camera for scan user documents,
-     * you can simply add a text like:
-     * "To scan documents for verification, allow YourAppName to access the permission for Camera."
-     *
-     * In this way, if the user deny the permission from this dialog, it won't propagate to your app
-     * real permission, and you Play Store Vitals score.
-     *
-     * @param customGentlyRequest is a callback that will run a custom user code snippet, this code
-     * snippet have to call other callback that will send a boolean to notify the ExcuseMe to continue
-     * or cancel the permission request
-     */
-    fun gently(customGentlyRequest: ((Boolean) -> Unit) -> Unit): ExcuseMe {
-        preDialog = PrePermissionDialog(
-            customGentlyRequest
-        )
-        return this
-    }
-
-    /**
-     * This method will add a generic dialog after the permission request if the permission
-     * is denied. This is a fallback to insist to ask again the permission, explaining why is
-     * necessary to continue
-     *
-     * You need to add params the title and explanations for those two situations:
-     *  1. Show permission dialog again
-     *  2. Show the settings page
-     *
-     * @param explainAgainTitle a simple title related to your permissions request and why it's necessary
-     * @param explainAgainExplanation a simple explanation related to your permissions request and why it's necessary
-     * @param showSettingsTitle a simple explanation related to your permissions request and why it's need to show the settings page
-     * @param showSettingsExplanation a simple explanation related to your permissions request and why it's need to show the settings page
-     */
-    fun please(
-        explainAgainTitle: String, explainAgainExplanation: String,
-        showSettingsTitle: String, showSettingsExplanation: String
-    ): ExcuseMe {
-        posDialog = PosPermissionDialog(
-            explainAgainTitle,
-            explainAgainExplanation,
-            showSettingsTitle,
-            showSettingsExplanation
-        )
-        return this
-    }
-
-    /**
-     * This method will add a generic dialog after the permission request if the permission
-     * is denied. This is a fallback to insist to ask again the permission, explaining why is
-     * necessary to continue.
-     * You need to implement the callback for those two situations:
-     *  1. Show permission dialog again
-     *  2. Show the settings page
-     *
-     * @param customDialogRequest is a lambda callback that will run a custom user code snippet, this code
-     * snippet will tell wich situation is and will wait the boolean to notify the ExcuseMe to continue
-     * or cancel
-     */
-    fun please(customDialogRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)): ExcuseMe {
-        posDialog = PosPermissionDialog(customDialogRequest)
-        return this
-    }
-
-    /**
-     * Ask permission for one or multiple permissions and start the permission dialog
-     * This method use async return from Kotlin Coroutines and can be used without callbacks
-     *
-     * @param permission one or multiple permissions from android.Manifest.permission.* strings
-     * @return PermissionStatus object that holds the result with the granted/refused permissions
-     */
-    suspend fun permissionFor(vararg permission: String) = runPermissionRequest(*permission)
-
-    /**
-     * Ask permission for one or multiple permissions and start the permission dialog
-     * This method use async return from Kotlin Coroutines and can be used without callbacks
-     *
-     * @param permission one or multiple permissions from android.Manifest.permission.* strings
-     * @return boolean that holds the result with the granted/refused permission
-     */
-    suspend fun permissionFor(permission: String) =
-        runPermissionRequest(permission).granted.contains(permission)
-
-    /**
-     * Calls the InvisibleActivity that makes the Permission request. The channel will
-     * listen for the completePermission()
-     */
-    private suspend fun runPermissionRequest(vararg permissions: String): PermissionStatus {
-        weakContext?.get()?.let { context ->
-
-            val deniedPerm = permissions.filter { !doWeHavePermissionFor(context, it) }
-
-            if (deniedPerm.isEmpty()) {
-                permissionStatus = PermissionStatus(granted = permissions.toMutableList())
-                weakContext?.clear()
-                weakContext = null
-                preDialog = PrePermissionDialog()
-                posDialog = PosPermissionDialog()
-                return permissionStatus
-            } else {
-                context.startActivity(Intent(context, InvisibleActivity::class.java).apply {
-                    putExtra("permissions", deniedPerm.toTypedArray())
-                })
-                if (channel == null) channel = Channel()
-                channel?.receive()
-                channel = null
+        /**
+         * Handle permissions automagically using the Thread.UncaughtExceptionHandler
+         * @param activity the activity that the ExcuseMe will listen for permissions
+         * @param afterPermissionsRequest the callback that will run after the permission result
+         * @return the callback will return true if the user granted all the permissions
+         */
+        fun couldYouHandlePermissionsForMe(
+            activity: Activity,
+            afterPermissionRequest: (Boolean) -> Unit
+        ) {
+            try {
+                Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
+                    activity,
+                    (activity as? AppCompatActivity)?.lifecycle,
+                    afterPermissionRequest
+                )
+            } catch (err: Exception) {
+                println("Can't do it automatically: ${err.message}")
             }
         }
-        return permissionStatus
+
+        /**
+         * Handle permissions automagically using the Thread.UncaughtExceptionHandler
+         * @param fragment the fragment that the ExcuseMe will listen for permissions
+         * @param afterPermissionsRequest the callback that will run after the permission result
+         * @return the callback will return true if the user granted all the permissions
+         */
+        fun couldYouHandlePermissionsForMe(
+            fragment: Fragment,
+            afterPermissionsRequest: (Boolean) -> Unit
+        ) {
+            try {
+                Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
+                    fragment.requireActivity(),
+                    fragment.lifecycle,
+                    afterPermissionsRequest
+                )
+            } catch (err: Exception) {
+                println("Can't do it automatically: ${err.message}")
+            }
+        }
+
+        /**
+         * Callback to continue with the result from the permissions requests
+         * @param permissionResult the permissions result that come from the InvisibleActivity
+         */
+        fun onPermissionResult(permissionResult: PermissionStatus) {
+            permissionStatus = permissionResult
+            CoroutineScope(Dispatchers.Main.immediate).launch {
+                channel?.send(true)
+                weakContext?.clear()
+                weakContext = null
+            }
+        }
+
+        /**
+         * Check if the given context have granted permissions for all the strings given
+         * @param context The context. Prefer use UI context like activity, fragment, view...
+         * @param permissions One or more permissions that you want to check if have permissions
+         * @return true if user had granted permissions to all of the strings given
+         */
+        fun doWeHavePermissionFor(context: Context, vararg permissions: String): Boolean {
+            permissions.forEach {
+                if (ContextCompat.checkSelfPermission(context, it) !=
+                    PackageManager.PERMISSION_GRANTED
+                ) return false
+            }
+            return true
+        }
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun getPreDialog() = preDialog
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun clearPreDialog() {
+            preDialog = PrePermissionDialog()
+        }
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun getPosDialog() = posDialog
+
+        /**
+         * This method shouldn't be used outside the ExcuseMe implementation
+         */
+        fun clearPosDialog() {
+            posDialog = PosPermissionDialog()
+        }
+
+
+        /**
+         * Ask permission for one or multiple permissions and start the permission dialog
+         * This method use callback and can be used with Kotlin callback syntax
+         *
+         * @param permission one or multiple permissions from android.Manifest.permission.* strings
+         * @param completion callback with PermissionStatus object that holds the result
+         * @return Return nothing, but the completion callback have the PermissionStatus object that
+         * holds the result
+         */
+        fun permissionFor(
+            vararg permission: String,
+            completion: (permissionStatus: PermissionStatus) -> Unit
+        ) = CoroutineScope(Dispatchers.Main.immediate).launch {
+            val req = runPermissionRequest(*permission)
+            completion(req)
+        }
+
+        /**
+         * This method will add a generic dialog before ask the permission for explain the reason
+         * of asking this permission. This will help to reduce the users permissions denied that
+         * could decrease your Google Store Vitals score.
+         * Source: https://developer.android.com/topic/performance/vitals/permissions
+         *
+         * This dialog will create a text along with your explanation to clarify the usage of the
+         * permission. For example, if you want permission to use the camera for scan user documents,
+         * you can simply add a text like:
+         * "To scan documents for verification, allow YourAppName to access the permission for Camera."
+         *
+         * In this way, if the user deny the permission from this dialog, it won't propagate to your app
+         * real permission, and you Play Store Vitals score.
+         *
+         * @param explanation a simple explanation related to your permissions request
+         */
+        fun gently(title: String, explanation: String): ExcuseMe.Companion {
+            preDialog =
+                PrePermissionDialog(
+                    title,
+                    explanation
+                )
+            return this
+        }
+
+        /**
+         * This method will let the user to implement his custom dialog/something before ask the
+         * permission for explain the reason of asking this permission. This will help to reduce the
+         * users permissions denied that could decrease your Google Store Vitals score.
+         * Source: https://developer.android.com/topic/performance/vitals/permissions
+         *
+         * This dialog will create a text along with your explanation to clarify the usage of the
+         * permission. For example, if you want permission to use the camera for scan user documents,
+         * you can simply add a text like:
+         * "To scan documents for verification, allow YourAppName to access the permission for Camera."
+         *
+         * In this way, if the user deny the permission from this dialog, it won't propagate to your app
+         * real permission, and you Play Store Vitals score.
+         *
+         * @param customGentlyRequest is a callback that will run a custom user code snippet, this code
+         * snippet have to call other callback that will send a boolean to notify the ExcuseMe to continue
+         * or cancel the permission request
+         */
+        fun gently(customGentlyRequest: ((Boolean) -> Unit) -> Unit): ExcuseMe.Companion {
+            preDialog = PrePermissionDialog(
+                customGentlyRequest
+            )
+            return this
+        }
+
+        /**
+         * This method will add a generic dialog after the permission request if the permission
+         * is denied. This is a fallback to insist to ask again the permission, explaining why is
+         * necessary to continue
+         *
+         * You need to add params the title and explanations for those two situations:
+         *  1. Show permission dialog again
+         *  2. Show the settings page
+         *
+         * @param explainAgainTitle a simple title related to your permissions request and why it's necessary
+         * @param explainAgainExplanation a simple explanation related to your permissions request and why it's necessary
+         * @param showSettingsTitle a simple explanation related to your permissions request and why it's need to show the settings page
+         * @param showSettingsExplanation a simple explanation related to your permissions request and why it's need to show the settings page
+         */
+        fun please(
+            explainAgainTitle: String, explainAgainExplanation: String,
+            showSettingsTitle: String, showSettingsExplanation: String
+        ): ExcuseMe.Companion {
+            posDialog = PosPermissionDialog(
+                explainAgainTitle,
+                explainAgainExplanation,
+                showSettingsTitle,
+                showSettingsExplanation
+            )
+            return this
+        }
+
+        /**
+         * This method will add a generic dialog after the permission request if the permission
+         * is denied. This is a fallback to insist to ask again the permission, explaining why is
+         * necessary to continue.
+         * You need to implement the callback for those two situations:
+         *  1. Show permission dialog again
+         *  2. Show the settings page
+         *
+         * @param customDialogRequest is a lambda callback that will run a custom user code snippet, this code
+         * snippet will tell wich situation is and will wait the boolean to notify the ExcuseMe to continue
+         * or cancel
+         */
+        fun please(customDialogRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)): ExcuseMe.Companion {
+            posDialog = PosPermissionDialog(customDialogRequest)
+            return this
+        }
+
+        /**
+         * Ask permission for one or multiple permissions and start the permission dialog
+         * This method use async return from Kotlin Coroutines and can be used without callbacks
+         *
+         * @param permission one or multiple permissions from android.Manifest.permission.* strings
+         * @return PermissionStatus object that holds the result with the granted/refused permissions
+         */
+        suspend fun permissionFor(vararg permission: String) = runPermissionRequest(*permission)
+
+        /**
+         * Ask permission for one or multiple permissions and start the permission dialog
+         * This method use async return from Kotlin Coroutines and can be used without callbacks
+         *
+         * @param permission one or multiple permissions from android.Manifest.permission.* strings
+         * @return boolean that holds the result with the granted/refused permission
+         */
+        suspend fun permissionFor(permission: String) =
+            runPermissionRequest(permission).granted.contains(permission)
+
+        /**
+         * Calls the InvisibleActivity that makes the Permission request. The channel will
+         * listen for the completePermission()
+         */
+        private suspend fun runPermissionRequest(vararg permissions: String): PermissionStatus {
+            weakContext?.get()?.let { context ->
+
+                val deniedPerm = permissions.filter { !doWeHavePermissionFor(context, it) }
+
+                if (deniedPerm.isEmpty()) {
+                    permissionStatus = PermissionStatus(granted = permissions.toMutableList())
+                    weakContext?.clear()
+                    weakContext = null
+                    preDialog = PrePermissionDialog()
+                    posDialog = PosPermissionDialog()
+                    return permissionStatus
+                } else {
+                    context.startActivity(Intent(context, InvisibleActivity::class.java).apply {
+                        putExtra("permissions", deniedPerm.toTypedArray())
+                    })
+                    if (channel == null) channel = Channel()
+                    channel?.receive()
+                    channel = null
+                }
+            }
+            return permissionStatus
+        }
     }
 }

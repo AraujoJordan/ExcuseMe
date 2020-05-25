@@ -10,23 +10,21 @@ Because we don't need to be rude for asking permissions
 ExcuseMe is an Android library that provides an one-line implementation for android permissions made with Kotlin.
 
 ```kotlin
-val granted : Boolean = ExcuseMe().couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
+val granted : Boolean = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
 ```
 ![](doc/excuseme.gif)
 
 ## 🚀 Why you should use ExcuseMe?
 
 1. Better performance with Kotlin Coroutines
-   * Coroutines uses less memory have better performance than threads for small async/ui thread changes.
+   * A better performance in comparison with other libraries that use Thread as it uses less memory have better performance than threads for small async/ui thread changes.
 2. One-line permission request
    * ExcuseMe can be used with Kotlin Suspending functions that gives a better syntax and better code readability
 3. No more interface listeners to implement
-   * You don't need to implement callbacks interfaces that it just add boilerplate code to maintain
+   * With ExcuseMe, you don't need to implement callbacks interfaces that it just add boilerplate code to maintain
 4. It can be used with lambda callbacks
    * If you don't know how to implement suspend functions, ExcuseMe could be used with Kotlin lambda callbacks
-5. Handling uncaught permissions automatically
-   * You can use this one line method to ask permissions automatically. No more SecurityException because of permissions!
-6. Polite way to ask for requests
+5. Polite way to ask for requests
    * Because we don't need to be rude for asking permissions
 
 ## 📖 Usage
@@ -53,7 +51,7 @@ ExcuseMe is easier way to implement Permissions in Android. But you still have t
 
 You can find the complete list of permissions on [this documentation](https://developer.android.com/reference/android/Manifest.permission "Manifest Permissions").
 
-After that, you can use on of the three implementations bellow to add the permission properly:
+After that, you can use on of the two implementations bellow to add the permission properly:
 
 1. [The Simple one line Usage](#onelineusage)
 2. [Auto Permission One line Handling](#automagically)
@@ -66,7 +64,7 @@ This implementation uses [suspend functions](https://kotlinlang.org/docs/referen
 
 ```kotlin
 suspend fun cameraUsage() {
-    if(ExcuseMe().couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA) {
+    if(ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA) {
         //Do your camera stuffs
     }
 }
@@ -83,7 +81,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    ExcuseMe().couldYouHandlePermissionsForMe(this) { accept ->  if(accept) openCamera() }
+    ExcuseMe.couldYouHandlePermissionsForMe(this) { accept ->  if(accept) openCamera() }
 
     openCamera()
 }
@@ -98,7 +96,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    ExcuseMe().couldYouGive(this).permissionFor(
+    ExcuseMe.couldYouGive(this).permissionFor(
         android.Manifest.permission.CAMERA,
         ) {
         if(it.granted.contains(android.Manifest.permission.CAMERA)) {
@@ -144,7 +142,7 @@ You can also run multiple permissions request in the same function and syntax.
 
 ```kotlin
 suspend fun lotOfPermissions() {
-	val res = ExcuseMe().couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+	val res = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 }
 ```
 
@@ -155,10 +153,10 @@ You can use this method to check one or multiple permissions in one simple funct
 
 ```kotlin
 //single permission
-val bool = ExcuseMe().doWeHavePermissionFor(this, android.Manifest.permission.CAMERA)
+val bool = ExcuseMe.doWeHavePermissionFor(this, android.Manifest.permission.CAMERA)
 
 //You can also ask if the system have multiple permissions (Can be more than two)
-val bool = ExcuseMe().doWeHavePermissionFor(this,
+val bool = ExcuseMe.doWeHavePermissionFor(this,
     android.Manifest.permission.CAMERA,
     android.Manifest.permission.READ_CONTACTS,
     ...
@@ -173,7 +171,7 @@ app [Android Vitals Score](https://developer.android.com/distribute/best-practic
 The gently() methods will explain why the app will ask the required permission
 
 ```kotlin
- ExcuseMe().couldYouGive(this).gently(
+ ExcuseMe.couldYouGive(this).gently(
         "Permission Request",
         "To easily connect with family and friends, allow the app access to your contacts"
     ).permissionFor(permission.READ_CONTACTS)
@@ -182,7 +180,7 @@ The gently() methods will explain why the app will ask the required permission
 This can also be used with a custom implementation (without using the default dialog we provide)
 
 ```kotlin
-ExcuseMe().couldYouGive(this).gently { result ->
+ExcuseMe.couldYouGive(this).gently { result ->
         val dialog = AlertDialog.Builder(this@ExampleActivity)
         dialog.setTitle("Ask Permissions")
         dialog.setMessage("To scan your document faster, allow the app access the camera")
@@ -204,7 +202,7 @@ asking if the user want to try again. It's also can redirect the user to the app
 of the user react to put not show the permission request again.
 
 ```kotlin
-ExcuseMe().couldYouGive(this).please(
+ExcuseMe.couldYouGive(this).please(
     explainAgainTitle = "Permission is necessary",
     explainAgainExplanation = "The app need this permission to send the automatic SMS",
     showSettingsTitle = "Set permission in Settings",
@@ -215,7 +213,7 @@ ExcuseMe().couldYouGive(this).please(
 This can also be used with a custom implementation (without using the default dialog we provide)
 
 ```kotlin
-ExcuseMe().couldYouGive(this).please { type, result ->
+ExcuseMe.couldYouGive(this).please { type, result ->
     when (type) {
         DialogType.EXPLAIN_AGAIN -> { /** do you things**/ }
         DialogType.SHOW_SETTINGS -> { /** do you things**/ }
