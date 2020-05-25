@@ -10,7 +10,7 @@ Because we don't need to be rude for asking permissions
 ExcuseMe is an Android library that provides an one-line implementation for android permissions made with Kotlin.
 
 ```kotlin
-val granted : Boolean = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
+val granted : Boolean = ExcuseMe().couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA)
 ```
 ![](doc/excuseme.gif)
 
@@ -42,7 +42,7 @@ ExcuseMe is easier way to implement Permissions in Android. But you still have t
 
     <!-- Add your permission here-->
     <uses-permission android:name="android.permission.CAMERA" />
-    
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -66,7 +66,7 @@ This implementation uses [suspend functions](https://kotlinlang.org/docs/referen
 
 ```kotlin
 suspend fun cameraUsage() {
-    if(ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA) {
+    if(ExcuseMe().couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA) {
         //Do your camera stuffs
     }
 }
@@ -83,7 +83,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    ExcuseMe.couldYouHandlePermissionsForMe(this) { accept ->  if(accept) openCamera() }
+    ExcuseMe().couldYouHandlePermissionsForMe(this) { accept ->  if(accept) openCamera() }
 
     openCamera()
 }
@@ -91,14 +91,14 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 ### <a name='lambdacallback'></a>3. Kotlin Lambda Callback Usage
 
-This implementation uses [trailing lambdas callbacks](https://kotlinlang.org/docs/reference/lambdas.html#passing-a-lambda-to-the-last-parameter "Passing trailing lambdas"), so it will be natural like as an OnClickListener implementation. 
+This implementation uses [trailing lambdas callbacks](https://kotlinlang.org/docs/reference/lambdas.html#passing-a-lambda-to-the-last-parameter "Passing trailing lambdas"), so it will be natural like as an OnClickListener implementation.
 
 ```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    ExcuseMe.couldYouGive(this).permissionFor(
+    ExcuseMe().couldYouGive(this).permissionFor(
         android.Manifest.permission.CAMERA,
         ) {
         if(it.granted.contains(android.Manifest.permission.CAMERA)) {
@@ -112,7 +112,7 @@ This method doesn't need to use a suspend function, but it uses callback.
 
 ## 📦 Installation
 
-#### Step 1. Add the JitPack repository to your project build file 
+#### Step 1. Add the JitPack repository to your project build file
 
 + build.gradle (Project: YourProjectName)
 ```gradle
@@ -123,7 +123,7 @@ allprojects {
 }
 ```
 
-#### Step 2. Add the dependency to your app build file 
+#### Step 2. Add the dependency to your app build file
 
 + build.gradle (Module: app) [![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/AraujoJordan/ExcuseMe/)
 ```gradle
@@ -144,7 +144,7 @@ You can also run multiple permissions request in the same function and syntax.
 
 ```kotlin
 suspend fun lotOfPermissions() {
-	val res = ExcuseMe.couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+	val res = ExcuseMe().couldYouGive(this).permissionFor(android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 }
 ```
 
@@ -155,10 +155,10 @@ You can use this method to check one or multiple permissions in one simple funct
 
 ```kotlin
 //single permission
-val bool = ExcuseMe.doWeHavePermissionFor(this, android.Manifest.permission.CAMERA)
+val bool = ExcuseMe().doWeHavePermissionFor(this, android.Manifest.permission.CAMERA)
 
 //You can also ask if the system have multiple permissions (Can be more than two)
-val bool = ExcuseMe.doWeHavePermissionFor(this,
+val bool = ExcuseMe().doWeHavePermissionFor(this,
     android.Manifest.permission.CAMERA,
     android.Manifest.permission.READ_CONTACTS,
     ...
@@ -173,7 +173,7 @@ app [Android Vitals Score](https://developer.android.com/distribute/best-practic
 The gently() methods will explain why the app will ask the required permission
 
 ```kotlin
- ExcuseMe.couldYouGive(this).gently(
+ ExcuseMe().couldYouGive(this).gently(
         "Permission Request",
         "To easily connect with family and friends, allow the app access to your contacts"
     ).permissionFor(permission.READ_CONTACTS)
@@ -182,7 +182,7 @@ The gently() methods will explain why the app will ask the required permission
 This can also be used with a custom implementation (without using the default dialog we provide)
 
 ```kotlin
-ExcuseMe.couldYouGive(this).gently { result ->
+ExcuseMe().couldYouGive(this).gently { result ->
         val dialog = AlertDialog.Builder(this@ExampleActivity)
         dialog.setTitle("Ask Permissions")
         dialog.setMessage("To scan your document faster, allow the app access the camera")
@@ -204,7 +204,7 @@ asking if the user want to try again. It's also can redirect the user to the app
 of the user react to put not show the permission request again.
 
 ```kotlin
-ExcuseMe.couldYouGive(this).please(
+ExcuseMe().couldYouGive(this).please(
     explainAgainTitle = "Permission is necessary",
     explainAgainExplanation = "The app need this permission to send the automatic SMS",
     showSettingsTitle = "Set permission in Settings",
@@ -215,7 +215,7 @@ ExcuseMe.couldYouGive(this).please(
 This can also be used with a custom implementation (without using the default dialog we provide)
 
 ```kotlin
-ExcuseMe.couldYouGive(this).please { type, result ->
+ExcuseMe().couldYouGive(this).please { type, result ->
     when (type) {
         DialogType.EXPLAIN_AGAIN -> { /** do you things**/ }
         DialogType.SHOW_SETTINGS -> { /** do you things**/ }

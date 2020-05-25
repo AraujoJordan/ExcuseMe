@@ -39,19 +39,13 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
-
 /**
- * This class is a singleton and it holds the control of the Android Runtime permissions using
+ * This class holds the control of the Android Runtime permissions using
  * an InvisibleActivity for make the request and Coroutines to handle async the result
  *
  * @author Jordan L. Araujo Jr. (araujojordan)
  */
-class ExcuseMe private constructor() {
-
-    //Holds ExcuseMe Singleton for return the permissions
-    private object HOLDER {
-        val INSTANCE = ExcuseMe()
-    }
+class ExcuseMe {
 
     private var weakContext: WeakReference<Context>? = null
     private var permissionStatus = PermissionStatus()
@@ -59,130 +53,124 @@ class ExcuseMe private constructor() {
     private var preDialog = PrePermissionDialog()
     private var posDialog = PosPermissionDialog()
 
-    companion object {
+    /**
+     * Set the activity that will be used to call the invisible activity
+     */
+    fun couldYouGive(activity: Activity): ExcuseMe {
+        weakContext = WeakReference(activity)
+        return this
+    }
 
-        private object HOLDER {
-            val INSTANCE = ExcuseMe()
-        }
+    /**
+     * Set the fragment that will be used to call the invisible activity
+     */
+    fun couldYouGive(fragment: Fragment): ExcuseMe {
+        weakContext = WeakReference(fragment.requireActivity())
+        return this
+    }
 
-        /**
-         * Set the activity that will be used to call the invisible activity
-         */
-        fun couldYouGive(activity: Activity): ExcuseMe {
-            HOLDER.INSTANCE.weakContext = WeakReference(activity)
-            return ExcuseMe.HOLDER.INSTANCE
-        }
+    /**
+     * Set the context that will be used to call the invisible activity
+     */
+    fun couldYouGive(context: Context): ExcuseMe {
+        weakContext = WeakReference(context)
+        return this
+    }
 
-        /**
-         * Set the fragment that will be used to call the invisible activity
-         */
-        fun couldYouGive(fragment: Fragment): ExcuseMe {
-            HOLDER.INSTANCE.weakContext = WeakReference(fragment.requireActivity())
-            return ExcuseMe.HOLDER.INSTANCE
-        }
-
-        /**
-         * Set the context that will be used to call the invisible activity
-         */
-        fun couldYouGive(context: Context): ExcuseMe {
-            HOLDER.INSTANCE.weakContext = WeakReference(context)
-            return ExcuseMe.HOLDER.INSTANCE
-        }
-
-        /**
-         * Handle permissions automagically using the Thread.UncaughtExceptionHandler
-         * @param activity the activity that the ExcuseMe will listen for permissions
-         * @param afterPermissionsRequest the callback that will run after the permission result
-         * @return the callback will return true if the user granted all the permissions
-         */
-        fun couldYouHandlePermissionsForMe(
-            activity: Activity,
-            afterPermissionRequest: (Boolean) -> Unit
-        ) {
-            try {
-                Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
-                    activity,
-                    (activity as? AppCompatActivity)?.lifecycle,
-                    afterPermissionRequest
-                )
-            } catch (err: Exception) {
-                println("Can't do it automatically: ${err.message}")
-            }
-        }
-
-        /**
-         * Handle permissions automagically using the Thread.UncaughtExceptionHandler
-         * @param fragment the fragment that the ExcuseMe will listen for permissions
-         * @param afterPermissionsRequest the callback that will run after the permission result
-         * @return the callback will return true if the user granted all the permissions
-         */
-        fun couldYouHandlePermissionsForMe(
-            fragment: Fragment,
-            afterPermissionsRequest: (Boolean) -> Unit
-        ) {
-            try {
-                Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
-                    fragment.requireActivity(),
-                    fragment.lifecycle,
-                    afterPermissionsRequest
-                )
-            } catch (err: Exception) {
-                println("Can't do it automatically: ${err.message}")
-            }
-        }
-
-        /**
-         * Callback to continue with the result from the permissions requests
-         * @param permissionResult the permissions result that come from the InvisibleActivity
-         */
-        fun onPermissionResult(permissionResult: PermissionStatus) {
-            HOLDER.INSTANCE.permissionStatus = permissionResult
-            CoroutineScope(Dispatchers.Main.immediate).launch {
-                HOLDER.INSTANCE.channel?.send(true)
-                HOLDER.INSTANCE.weakContext?.clear()
-                HOLDER.INSTANCE.weakContext = null
-            }
-        }
-
-        /**
-         * Check if the given context have granted permissions for all the strings given
-         * @param context The context. Prefer use UI context like activity, fragment, view...
-         * @param permissions One or more permissions that you want to check if have permissions
-         * @return true if user had granted permissions to all of the strings given
-         */
-        fun doWeHavePermissionFor(context: Context, vararg permissions: String): Boolean {
-            permissions.forEach {
-                if (ContextCompat.checkSelfPermission(context, it) !=
-                    PackageManager.PERMISSION_GRANTED
-                ) return false
-            }
-            return true
-        }
-
-        /**
-         * This method shouldn't be used outside the ExcuseMe implementation
-         */
-        fun getPreDialog() = HOLDER.INSTANCE.preDialog
-
-        /**
-         * This method shouldn't be used outside the ExcuseMe implementation
-         */
-        fun clearPreDialog() {
-            HOLDER.INSTANCE.preDialog = PrePermissionDialog()
-        }
-
-        /**
-         * This method shouldn't be used outside the ExcuseMe implementation
-         */
-        fun getPosDialog() = HOLDER.INSTANCE.posDialog
-
-        /**
-         * This method shouldn't be used outside the ExcuseMe implementation
-         */
-        fun clearPosDialog() {
-            HOLDER.INSTANCE.posDialog = PosPermissionDialog()
+    /**
+     * Handle permissions automagically using the Thread.UncaughtExceptionHandler
+     * @param activity the activity that the ExcuseMe will listen for permissions
+     * @param afterPermissionsRequest the callback that will run after the permission result
+     * @return the callback will return true if the user granted all the permissions
+     */
+    fun couldYouHandlePermissionsForMe(
+        activity: Activity,
+        afterPermissionRequest: (Boolean) -> Unit
+    ) {
+        try {
+            Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
+                activity,
+                (activity as? AppCompatActivity)?.lifecycle,
+                afterPermissionRequest
+            )
+        } catch (err: Exception) {
+            println("Can't do it automatically: ${err.message}")
         }
     }
+
+    /**
+     * Handle permissions automagically using the Thread.UncaughtExceptionHandler
+     * @param fragment the fragment that the ExcuseMe will listen for permissions
+     * @param afterPermissionsRequest the callback that will run after the permission result
+     * @return the callback will return true if the user granted all the permissions
+     */
+    fun couldYouHandlePermissionsForMe(
+        fragment: Fragment,
+        afterPermissionsRequest: (Boolean) -> Unit
+    ) {
+        try {
+            Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
+                fragment.requireActivity(),
+                fragment.lifecycle,
+                afterPermissionsRequest
+            )
+        } catch (err: Exception) {
+            println("Can't do it automatically: ${err.message}")
+        }
+    }
+
+    /**
+     * Callback to continue with the result from the permissions requests
+     * @param permissionResult the permissions result that come from the InvisibleActivity
+     */
+    fun onPermissionResult(permissionResult: PermissionStatus) {
+        permissionStatus = permissionResult
+        CoroutineScope(Dispatchers.Main.immediate).launch {
+            channel?.send(true)
+            weakContext?.clear()
+            weakContext = null
+        }
+    }
+
+    /**
+     * Check if the given context have granted permissions for all the strings given
+     * @param context The context. Prefer use UI context like activity, fragment, view...
+     * @param permissions One or more permissions that you want to check if have permissions
+     * @return true if user had granted permissions to all of the strings given
+     */
+    fun doWeHavePermissionFor(context: Context, vararg permissions: String): Boolean {
+        permissions.forEach {
+            if (ContextCompat.checkSelfPermission(context, it) !=
+                PackageManager.PERMISSION_GRANTED
+            ) return false
+        }
+        return true
+    }
+
+    /**
+     * This method shouldn't be used outside the ExcuseMe implementation
+     */
+    fun getPreDialog() = preDialog
+
+    /**
+     * This method shouldn't be used outside the ExcuseMe implementation
+     */
+    fun clearPreDialog() {
+        preDialog = PrePermissionDialog()
+    }
+
+    /**
+     * This method shouldn't be used outside the ExcuseMe implementation
+     */
+    fun getPosDialog() = posDialog
+
+    /**
+     * This method shouldn't be used outside the ExcuseMe implementation
+     */
+    fun clearPosDialog() {
+        posDialog = PosPermissionDialog()
+    }
+
 
     /**
      * Ask permission for one or multiple permissions and start the permission dialog
@@ -223,7 +211,7 @@ class ExcuseMe private constructor() {
                 title,
                 explanation
             )
-        return HOLDER.INSTANCE
+        return this
     }
 
     /**
@@ -248,7 +236,7 @@ class ExcuseMe private constructor() {
         preDialog = PrePermissionDialog(
             customGentlyRequest
         )
-        return HOLDER.INSTANCE
+        return this
     }
 
     /**
@@ -275,7 +263,7 @@ class ExcuseMe private constructor() {
             showSettingsTitle,
             showSettingsExplanation
         )
-        return HOLDER.INSTANCE
+        return this
     }
 
     /**
@@ -292,7 +280,7 @@ class ExcuseMe private constructor() {
      */
     fun please(customDialogRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)): ExcuseMe {
         posDialog = PosPermissionDialog(customDialogRequest)
-        return HOLDER.INSTANCE
+        return this
     }
 
     /**
@@ -339,6 +327,6 @@ class ExcuseMe private constructor() {
                 channel = null
             }
         }
-        return HOLDER.INSTANCE.permissionStatus
+        return permissionStatus
     }
 }
