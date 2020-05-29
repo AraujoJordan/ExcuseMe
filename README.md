@@ -4,7 +4,7 @@ Because we don't need to be rude for asking permissions
 [![CircleCI](https://circleci.com/gh/AraujoJordan/ExcuseMe.svg?style=shield)](https://circleci.com/gh/AraujoJordan/ExcuseMe)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ExcuseMe-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/8122)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/AraujoJordan/ExcuseMe/LICENSE)
-[![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/AraujoJordan/ExcuseMe/)
+[![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/p/AraujoJordan/ExcuseMe)
 [![HitCount](http://hits.dwyl.com/AraujoJordan/ExcuseMe.svg)](http://hits.dwyl.com/AraujoJordan/ExcuseMe)
 
 ExcuseMe is an Android library that provides an one-line implementation for android permissions made with Kotlin.
