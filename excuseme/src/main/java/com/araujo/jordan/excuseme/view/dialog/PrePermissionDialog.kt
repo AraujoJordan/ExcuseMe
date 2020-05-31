@@ -53,6 +53,10 @@ class PrePermissionDialog : ExcuseMeDialog {
         this.customRequest = customDialogRequest
     }
 
+    /**
+     * Show PreDialog Permission (genlty method)
+     * @param act Activity that will launch the dialog
+     */
     @SuppressLint("InflateParams")
     override suspend fun showDialogForPermission(act: InvisibleActivity): Boolean {
         if (customRequest != null) {

@@ -75,11 +75,6 @@ class AutoPermissionHandler(
         Thread.currentThread().uncaughtExceptionHandler = null
     }
 
-    /**
-     * Handle permission based on the message of the trowable
-     * This method will run the after callback after the permission request execution
-     * @param trowable trowable with the permissions in the message
-     */
     private fun handlePermission(trowable: Throwable) =
         CoroutineScope(Dispatchers.Main.immediate).launch {
             val permissions = (trowable.message

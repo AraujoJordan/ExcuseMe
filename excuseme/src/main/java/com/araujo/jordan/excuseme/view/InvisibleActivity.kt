@@ -45,6 +45,9 @@ class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissio
     private val PERMISSIONS_REQUEST_ID = 4002
     private val SETTINGS_REQUEST_ID = 4009
 
+    /**
+     * Create the permission request flow
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
@@ -53,6 +56,9 @@ class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissio
         }
     }
 
+    /**
+     * Check the permissions result from the settings page and send the callback
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (SETTINGS_REQUEST_ID == requestCode) CoroutineScope(Dispatchers.Main.immediate).launch {
@@ -60,6 +66,9 @@ class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissio
         }
     }
 
+    /**
+     * Check the permissions result and send the callback
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -108,7 +117,7 @@ class InvisibleActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissio
 
         //This will make the ExcuseMe insist for the user give the asked permission
         if (ExcuseMe.getPosDialog().showDialog && permissionStatus.denied.isNotEmpty()) {
-            ExcuseMe.getPosDialog().setPermissions(permissionStatus.denied)
+            ExcuseMe.getPosDialog().setDeniedPermissions(permissionStatus.denied)
             val ans = ExcuseMe.getPosDialog()
                 .showDialogForPermission(this@InvisibleActivity)
             if (ans) {

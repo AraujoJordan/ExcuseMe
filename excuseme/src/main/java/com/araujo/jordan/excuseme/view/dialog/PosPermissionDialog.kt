@@ -58,6 +58,10 @@ class PosPermissionDialog : ExcuseMeDialog {
     private var deniedPermissions = listOf<String>()
     var dialogType: DialogType = DialogType.EXPLAIN_AGAIN
 
+    /**
+     * Show PosDialog Permission (please method)
+     * @param act Activity that will launch the dialog
+     */
     @SuppressLint("InflateParams")
     override suspend fun showDialogForPermission(act: InvisibleActivity): Boolean {
 
@@ -99,12 +103,19 @@ class PosPermissionDialog : ExcuseMeDialog {
         return super.showDialogForPermission(act)
     }
 
-    fun setPermissions(denied: List<String>) {
+    /**
+     * Set the permissions that were denied
+     * @param denied list of permissions denied
+     */
+    fun setDeniedPermissions(denied: List<String>) {
         this.deniedPermissions = denied
     }
 
 }
 
+/**
+ * Types of Dialog
+ */
 enum class DialogType {
     EXPLAIN_AGAIN,
     SHOW_SETTINGS

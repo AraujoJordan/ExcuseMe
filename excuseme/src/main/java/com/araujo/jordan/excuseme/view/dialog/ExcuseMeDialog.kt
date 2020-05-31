@@ -50,14 +50,22 @@ open class ExcuseMeDialog(val showDialog: Boolean) {
     private var channel: Channel<Boolean>? = null
     protected var alertDialog: AlertDialog? = null
 
+    /**
+     *  Start the Courotine Channel and wait for the result
+     *  @param act InvisibleActivity from ExcuseMe to ask the permissions
+     *  @return the result of the dialog
+     */
     open suspend fun showDialogForPermission(act: InvisibleActivity): Boolean {
         if (channel == null) channel = Channel()
         val status = channel?.receive() ?: false
         channel = null
-
         return status
     }
 
+    /**
+     * Callback method that releases the channel wit the result
+     * @param chanelAns Result of the dialog
+     */
     protected fun channelAns(chanelAns: Boolean) {
         CoroutineScope(Dispatchers.Main.immediate).launch {
             channel?.send(chanelAns)

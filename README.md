@@ -3,9 +3,9 @@ Because we don't need to be rude for asking permissions
 
 [![CircleCI](https://circleci.com/gh/AraujoJordan/ExcuseMe.svg?style=shield)](https://circleci.com/gh/AraujoJordan/ExcuseMe)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ExcuseMe-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/8122)
-[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/AraujoJordan/ExcuseMe/LICENSE)
-[![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/p/AraujoJordan/ExcuseMe)
 [![Downloads](https://jitpack.io/v/AraujoJordan/ExcuseMe/month.svg)](https://jitpack.io/p/AraujoJordan/ExcuseMe)
+[![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/AraujoJordan/ExcuseMe/)
+[![GitHub license](https://img.shields.io/badge/License-MIT-brightgreen)](https://github.com/AraujoJordan/ExcuseMe/LICENSE)
 [![HitCount](http://hits.dwyl.com/AraujoJordan/ExcuseMe.svg)](http://hits.dwyl.com/AraujoJordan/ExcuseMe)
 
 ExcuseMe is an Android library that provides an one-line implementation for android permissions made with Kotlin.
@@ -54,7 +54,7 @@ ExcuseMe is easier way to implement Permissions in Android. But you still have t
 
 You can find the complete list of permissions on [this documentation](https://developer.android.com/reference/android/Manifest.permission "Manifest Permissions").
 
-After that, you can use on of the two implementations bellow to add the permission properly:
+After that, you can use on of the three implementations bellow to add the permission properly:
 
 1. [The Simple one line Usage](#onelineusage)
 2. [Auto Permission One line Handling](#automagically)
@@ -126,7 +126,7 @@ allprojects {
 
 #### Step 2. Add the dependency to your app build file
 
-+ build.gradle (Module: app) [![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/p/AraujoJordan/ExcuseMe)
++ build.gradle (Module: app) [![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/AraujoJordan/ExcuseMe/)
 ```gradle
 dependencies {
 	implementation 'com.github.AraujoJordan:ExcuseMe:x.x.x'
