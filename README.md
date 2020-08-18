@@ -34,7 +34,7 @@ val granted : Boolean = ExcuseMe.couldYouGive(this).permissionFor(android.Manife
 
 ExcuseMe is easier way to implement Permissions in Android. But you still have to add the permission in the AndroidManifest.xml file.
 
-![AndroidManifest.xml location](/doc/manifestLocation.webp "AndroidManifest.xml location")
+![AndroidManifest.xml location](/doc/manifestLocation.png "AndroidManifest.xml location")
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
