@@ -83,7 +83,7 @@ dependencies {
 //    implementation 'com.simpligility.maven.plugins:android-maven-plugin:4.3.0'
     testImplementation 'junit:junit:4.13'
     testImplementation 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.16.0'
-    testImplementation 'androidx.test:runner:1.2.0'
+    testImplementation 'androidx.test:runner:1.3.0'
     testImplementation 'androidx.test:rules:1.2.0'
     testImplementation 'androidx.test:core:1.2.0'
 
