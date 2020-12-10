@@ -4,7 +4,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/android:api-29
+      - image: circleci/android:api-30
     parallelism: 2
     environment:
       - TERM: dumb
