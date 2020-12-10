@@ -28,11 +28,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.lifecycle.lifecycleScope
 import com.araujo.jordan.excuseme.ExcuseMe
 import com.araujo.jordan.excuseme.view.dialog.DialogType
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -76,7 +75,7 @@ class ExampleActivity : AppCompatActivity() {
         //Example of permission using the suspend function
         //and using the permission answer to update screen.
         calendarPermissionButton.setOnClickListener {
-            CoroutineScope(Dispatchers.Main.immediate).launch {
+            lifecycleScope.launch {
                 val res =
                     ExcuseMe.couldYouGive(this@ExampleActivity)
                         .permissionFor(permission.WRITE_CALENDAR)
@@ -96,7 +95,7 @@ class ExampleActivity : AppCompatActivity() {
 //        //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
 //        //Source: https://developer.android.com/topic/performance/vitals/permissions
 //        contactsPermissionButton.setOnClickListener {
-//            CoroutineScope(Dispatchers.Main.immediate).launch {
+//            lifecycleScope.launch {
 //                ExcuseMe.couldYouGive(this@ExampleActivity)
 //                    .gently(
 //                        "Permission Request",
@@ -110,7 +109,7 @@ class ExampleActivity : AppCompatActivity() {
         //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
         //Source: https://developer.android.com/topic/performance/vitals/permissions
         contactsPermissionButton.setOnClickListener {
-            CoroutineScope(Dispatchers.Main.immediate).launch {
+            lifecycleScope.launch {
                 val phones: Cursor? = contentResolver.query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     null,
