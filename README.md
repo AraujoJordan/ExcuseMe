@@ -2,6 +2,7 @@
 Because we don't need to be rude for asking permissions
 
 [![CircleCI](https://circleci.com/gh/AraujoJordan/ExcuseMe.svg?style=shield)](https://circleci.com/gh/AraujoJordan/ExcuseMe)
+[![CodeFactor](https://www.codefactor.io/repository/github/araujojordan/excuseme/badge)](https://www.codefactor.io/repository/github/araujojordan/excuseme)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ExcuseMe-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/8122)
 [![Downloads](https://jitpack.io/v/AraujoJordan/ExcuseMe/month.svg)](https://jitpack.io/p/AraujoJordan/ExcuseMe)
 [![Jitpack Enable](https://jitpack.io/v/AraujoJordan/ExcuseMe.svg)](https://jitpack.io/AraujoJordan/ExcuseMe/)
