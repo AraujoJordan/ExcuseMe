@@ -1,6 +1,6 @@
 /**
  *
- * Copyright © 2020 Jordan Lira de Araujo Junior
+ * Copyright © 2025 Jordan Lira de Araujo Junior
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -92,7 +92,6 @@ class ExcuseMe {
             try {
                 Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
                     activity,
-                    (activity as? AppCompatActivity)?.lifecycle,
                     afterPermissionRequest
                 )
             } catch (err: Exception) {
@@ -113,7 +112,6 @@ class ExcuseMe {
             try {
                 Thread.currentThread().uncaughtExceptionHandler = AutoPermissionHandler(
                     fragment.requireActivity(),
-                    fragment.lifecycle,
                     afterPermissionsRequest
                 )
             } catch (err: Exception) {

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright © 2020 Jordan Lira de Araujo Junior
+ * Copyright © 2025 Jordan Lira de Araujo Junior
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -22,9 +22,8 @@
 package com.araujo.jordan.excuseme
 
 import android.app.Activity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,15 +41,8 @@ import kotlinx.coroutines.launch
  */
 class AutoPermissionHandler(
     private var activity: Activity? = null,
-    lifecycle: Lifecycle?,
     private var afterPermissionRequest: ((Boolean) -> Unit)?
-) :
-    Thread.UncaughtExceptionHandler,
-    LifecycleObserver {
-
-    init {
-        lifecycle?.addObserver(this)
-    }
+) : Thread.UncaughtExceptionHandler, DefaultLifecycleObserver {
 
     /**
      * Implementation of uncaughtException. It will only listen for Permission Exceptions
@@ -66,11 +58,7 @@ class AutoPermissionHandler(
         }
     }
 
-    /**
-     * Destroy the activity reference and remove the uncaughtExceptionHandler listener.
-     */
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
         activity = null
         Thread.currentThread().uncaughtExceptionHandler = null
     }

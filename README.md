@@ -234,7 +234,7 @@ ExcuseMe.couldYouGive(this).please { type, result ->
 ```
 MIT License
 
-Copyright (c) 2020 Jordan L. A. Junior
+Copyright (c) 2025 Jordan L. A. Junior
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

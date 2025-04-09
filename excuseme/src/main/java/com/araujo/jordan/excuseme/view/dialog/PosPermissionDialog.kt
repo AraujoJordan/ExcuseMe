@@ -1,6 +1,6 @@
 /**
  *
- * Copyright © 2020 Jordan Lira de Araujo Junior
+ * Copyright © 2025 Jordan Lira de Araujo Junior
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -25,9 +25,9 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.araujo.jordan.excuseme.R
+import com.araujo.jordan.excuseme.databinding.DialogGentlyAskBinding
 import com.araujo.jordan.excuseme.utils.DesignUtils
 import com.araujo.jordan.excuseme.view.InvisibleActivity
-import kotlinx.android.synthetic.main.dialog_gently_ask.view.*
 
 /**
  * Implementation Dialog to explain the reason for the permission should be granted.
@@ -35,6 +35,8 @@ import kotlinx.android.synthetic.main.dialog_gently_ask.view.*
  * @author Jordan L. Araujo Jr. (araujojordan)
  */
 class PosPermissionDialog : ExcuseMeDialog {
+
+    private lateinit var binding: DialogGentlyAskBinding
 
     private var customRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)? = null
 
@@ -77,23 +79,23 @@ class PosPermissionDialog : ExcuseMeDialog {
         } else {
             val dialog = AlertDialog.Builder(act)
             val v = act.layoutInflater.inflate(R.layout.dialog_gently_ask, null)
-
-            v.excuseMeGentlyTitle?.text =
+            binding = DialogGentlyAskBinding.inflate(act.layoutInflater)
+            binding.excuseMeGentlyTitle?.text =
                 when (dialogType) {
                     DialogType.EXPLAIN_AGAIN -> title
                     DialogType.SHOW_SETTINGS -> titleShowSettings
                 }
-            v.excuseMeGentlyDescriptionText?.text =
+            binding.excuseMeGentlyDescriptionText?.text =
                 when (dialogType) {
                     DialogType.EXPLAIN_AGAIN -> reason
                     DialogType.SHOW_SETTINGS -> reasonShowSettings
                 }
-            v.excuseMeGentlyYesBtn?.setOnClickListener { channelAns(true) }
-            v.excuseMeGentlyYesBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
-            v.excuseMeGentlyNoBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
-            v.excuseMeGentlyTitle?.setBackgroundColor(DesignUtils.resolveColor(act, "colorPrimary"))
-            v.excuseMeGentlyDescriptionText?.setTextColor(DesignUtils.resolveColor(act, "#0c0c0c"))
-            v.excuseMeGentlyNoBtn?.setOnClickListener { channelAns(false) }
+            binding.excuseMeGentlyYesBtn?.setOnClickListener { channelAns(true) }
+            binding.excuseMeGentlyYesBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
+            binding.excuseMeGentlyNoBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
+            binding.excuseMeGentlyTitle?.setBackgroundColor(DesignUtils.resolveColor(act, "colorPrimary"))
+            binding.excuseMeGentlyDescriptionText?.setTextColor(DesignUtils.resolveColor(act, "#0c0c0c"))
+            binding.excuseMeGentlyNoBtn?.setOnClickListener { channelAns(false) }
             dialog.setOnCancelListener { channelAns(false) }
             dialog.setView(v)
             dialog.setCancelable(false)

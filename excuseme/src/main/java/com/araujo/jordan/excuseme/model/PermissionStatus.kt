@@ -1,7 +1,7 @@
 /**
  * Designed and developed by Jordan Lira (@araujojordan)
  *
- * Copyright (C) 2020 Jordan Lira de Araujo Junior
+ * Copyright (C) 2025 Jordan Lira de Araujo Junior
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,

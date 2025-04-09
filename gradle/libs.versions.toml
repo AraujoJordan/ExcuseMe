@@ -1,0 +1,36 @@
+[versions]
+appcompat = "1.7.0"
+cardview = "1.0.0"
+coreKtx = "1.15.0"
+espressoCore = "3.6.1"
+gradle = "8.9.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+kotlinGradlePlugin = "1.9.23"
+kotlinStdlib = "2.1.20"
+kotlinxCoroutinesCore = "1.6.3-native-mt"
+kotlinxCoroutinesAndroid = "1.6.3-native-mt"
+kotlinxCoroutinesCoreVersion = "1.10.1"
+lifecycleRuntimeKtx = "2.8.7"
+robolectric = "4.14.1"
+runner = "1.6.2"
+rules = "1.6.1"
+
+[libraries]
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+core = { module = "androidx.test:core", version.ref = "rules" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+ext-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotlinx-coroutines-core-v1101 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCoreVersion" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+rules = { module = "androidx.test:rules", version.ref = "rules" }
+runner = { module = "androidx.test:runner", version.ref = "runner" }

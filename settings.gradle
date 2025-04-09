@@ -1,3 +1,0 @@
-rootProject.name='ExcuseMeSample'
-include ':app'
-include ':excuseme'

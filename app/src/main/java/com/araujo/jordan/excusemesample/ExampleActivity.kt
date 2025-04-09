@@ -1,6 +1,6 @@
 /**
  *
- * Copyright © 2020 Jordan Lira de Araujo Junior
+ * Copyright © 2025 Jordan Lira de Araujo Junior
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the “Software”), to deal in the Software without restriction,
@@ -31,13 +31,15 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import com.araujo.jordan.excuseme.ExcuseMe
 import com.araujo.jordan.excuseme.view.dialog.DialogType
-import kotlinx.android.synthetic.main.activity_main.*
+import com.araujo.jordan.excusemesample.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
 /**
  * Sample for the ExcuseMe library
  */
 class ExampleActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     val green by lazy { AppCompatResources.getColorStateList(this, R.color.colorGreen) }
     val red by lazy { AppCompatResources.getColorStateList(this, R.color.colorRed) }
@@ -47,21 +49,23 @@ class ExampleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         updateTextsWithPermissions()
 
         ExcuseMe.couldYouHandlePermissionsForMe(this) { accept -> if (accept) updateTextsWithPermissions() }
 
         //Example of a simple permissions request with callback
-        audioPermissionButton.setOnClickListener {
+        binding.audioPermissionButton.setOnClickListener {
             ExcuseMe.couldYouGive(this).permissionFor(permission.RECORD_AUDIO) {
                 updateTextsWithPermissions()
             }
         }
 
         //Example of multiple permissions request.
-        multiplePermissionsButton.setOnClickListener {
+        binding.multiplePermissionsButton.setOnClickListener {
             ExcuseMe.couldYouGive(this).permissionFor(
                 permission.READ_CONTACTS,
                 permission.CAMERA,
@@ -74,13 +78,13 @@ class ExampleActivity : AppCompatActivity() {
 
         //Example of permission using the suspend function
         //and using the permission answer to update screen.
-        calendarPermissionButton.setOnClickListener {
+        binding.calendarPermissionButton.setOnClickListener {
             lifecycleScope.launch {
                 val res =
                     ExcuseMe.couldYouGive(this@ExampleActivity)
                         .permissionFor(permission.WRITE_CALENDAR)
 
-                calendarPermissionsFeedback?.apply {
+                binding.calendarPermissionsFeedback?.apply {
                     if (res) {
                         text = granted
                         setTextColor(green.defaultColor)
@@ -108,7 +112,7 @@ class ExampleActivity : AppCompatActivity() {
 
         //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
         //Source: https://developer.android.com/topic/performance/vitals/permissions
-        contactsPermissionButton.setOnClickListener {
+        binding.contactsPermissionButton.setOnClickListener {
             lifecycleScope.launch {
                 val phones: Cursor? = contentResolver.query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -117,23 +121,15 @@ class ExampleActivity : AppCompatActivity() {
                     null,
                     null
                 )
-                while (phones?.moveToNext() != false) {
-                    val name =
-                        phones?.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-                    val number =
-                        phones?.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-
-                    println("name:${name} number:$number")
-                }
-                phones.close()
-
+                println(phones?.count)
+                phones?.close()
                 updateTextsWithPermissions()
             }
         }
 
         //Example of a CUSTOM dialog BEFORE ask the permissions. This is good for your Play Store Vitals
         //Source: https://developer.android.com/topic/performance/vitals/permissions
-        cameraPermissionButton.setOnClickListener {
+        binding.cameraPermissionButton.setOnClickListener {
             ExcuseMe.couldYouGive(this)
                 .gently { result ->
                     val dialog = AlertDialog.Builder(this@ExampleActivity)
@@ -151,7 +147,7 @@ class ExampleActivity : AppCompatActivity() {
         }
 
         //Example of a simple permissions request with callback
-        smsPermissionButton.setOnClickListener {
+        binding.smsPermissionButton.setOnClickListener {
             ExcuseMe.couldYouGive(this).please { type, result ->
                 when (type) {
                     DialogType.EXPLAIN_AGAIN -> {
@@ -168,11 +164,11 @@ class ExampleActivity : AppCompatActivity() {
     }
 
     private fun updateTextsWithPermissions() {
-        changeTextViewWithPermission(calendarPermissionsFeedback, permission.WRITE_CALENDAR)
-        changeTextViewWithPermission(cameraPermissionFeedback, permission.CAMERA)
-        changeTextViewWithPermission(audioPermissionFeedback, permission.RECORD_AUDIO)
-        changeTextViewWithPermission(contactPermissionsFeedback, permission.READ_CONTACTS)
-        changeTextViewWithPermission(smsPermissionFeedback, permission.SEND_SMS)
+        changeTextViewWithPermission(binding.calendarPermissionsFeedback, permission.WRITE_CALENDAR)
+        changeTextViewWithPermission(binding.cameraPermissionFeedback, permission.CAMERA)
+        changeTextViewWithPermission(binding.audioPermissionFeedback, permission.RECORD_AUDIO)
+        changeTextViewWithPermission(binding.contactPermissionsFeedback, permission.READ_CONTACTS)
+        changeTextViewWithPermission(binding.smsPermissionFeedback, permission.SEND_SMS)
     }
 
     private fun changeTextViewWithPermission(textView: TextView?, permission: String) {
