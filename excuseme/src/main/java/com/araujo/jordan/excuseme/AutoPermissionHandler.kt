@@ -22,12 +22,12 @@
 package com.araujo.jordan.excuseme
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 /**
  * This class will listen for the thread exceptions, if it founds a SecurityException with the
@@ -53,7 +53,6 @@ class AutoPermissionHandler(
         ) {
             handlePermission(trowable)
         } else {
-            println(trowable.message)
             activity?.finish()
         }
     }
@@ -65,15 +64,19 @@ class AutoPermissionHandler(
 
     private fun handlePermission(trowable: Throwable) =
         CoroutineScope(Dispatchers.Main.immediate).launch {
-            val permissions = (trowable.message
-                ?.split(" ")
-                ?.filter { it.startsWith("android.permission.") }
-                ?: listOf()).toTypedArray()
-            if (permissions.isEmpty()) return@launch
-            activity?.let {
-                val granted = ExcuseMe.couldYouGive(it)
-                    .permissionFor(*permissions).granted.size == permissions.size
-                afterPermissionRequest?.invoke(granted) ?: activity?.recreate()
+            try {
+                val permissions = (trowable.message
+                    ?.split(" ")
+                    ?.filter { it.startsWith("android.permission.") }
+                    ?: listOf()).toTypedArray()
+                if (permissions.isEmpty()) return@launch
+                activity?.let {
+                    val granted = ExcuseMe.couldYouGive(it)
+                        .permissionFor(*permissions).granted.size == permissions.size
+                    afterPermissionRequest?.invoke(granted) ?: activity?.recreate()
+                }
+            } catch (err: Exception) {
+                Log.e("ExcuseMe", "Error on automatic handling permission", err)
             }
         }
 }

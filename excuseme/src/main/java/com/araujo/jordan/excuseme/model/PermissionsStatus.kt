@@ -28,7 +28,7 @@ package com.araujo.jordan.excuseme.model
  * @param denied list of denied permissions
  * @author Jordan L. Araujo Jr. (araujojordan)
  */
-data class PermissionStatus(
-    var granted: MutableList<String> = mutableListOf(),
-    var denied: MutableList<String> = mutableListOf()
+data class PermissionsStatus(
+    var granted: MutableSet<String> = mutableSetOf(),
+    var denied: MutableSet<String> = mutableSetOf()
 )

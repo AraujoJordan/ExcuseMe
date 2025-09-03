@@ -21,52 +21,58 @@
 
 package com.araujo.jordan.excuseme.view.dialog
 
-import android.annotation.SuppressLint
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.compose.setContent
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
+import com.araujo.jordan.excuseme.ExcuseMe.renameGenericPermission
 import com.araujo.jordan.excuseme.R
-import com.araujo.jordan.excuseme.databinding.DialogGentlyAskBinding
-import com.araujo.jordan.excuseme.utils.DesignUtils
-import com.araujo.jordan.excuseme.view.InvisibleActivity
+import com.araujo.jordan.excuseme.view.InvisibleExcuseMeActivity
 
 /**
  * Implementation Dialog to explain the reason for the permission should be granted.
  * This dialog will only be showed if the user denied a permission
  * @author Jordan L. Araujo Jr. (araujojordan)
  */
-class PosPermissionDialog : ExcuseMeDialog {
-
-    private lateinit var binding: DialogGentlyAskBinding
+class PosPermissionDialog {
 
     private var customRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)? = null
 
-    constructor() : super(false)
+    constructor()
     constructor(
         titleAskAgain: String,
         reasonAskAgain: String,
         titleShowSettings: String,
         reasonShowSettings: String
-    ) : super(titleAskAgain, reasonAskAgain) {
+    ) {
         this.titleShowSettings = titleShowSettings
         this.reasonShowSettings = reasonShowSettings
+        this.titleAskAgain = titleAskAgain
+        this.reasonAskAgain = reasonAskAgain
     }
 
-    constructor(customDialogRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)) : super(true) {
+    constructor(customDialogRequest: ((type: DialogType, ((Boolean) -> Unit)) -> Unit)) {
         this.customRequest = customDialogRequest
     }
 
     private var titleShowSettings: String? = null
     private var reasonShowSettings: String? = null
-    private var deniedPermissions = listOf<String>()
+    private var titleAskAgain: String? = null
+    private var reasonAskAgain: String? = null
+    private var deniedPermissions = setOf<String>()
     var dialogType: DialogType = DialogType.EXPLAIN_AGAIN
 
     /**
      * Show PosDialog Permission (please method)
      * @param act Activity that will launch the dialog
      */
-    @SuppressLint("InflateParams")
-    override suspend fun showDialogForPermission(act: InvisibleActivity): Boolean {
-
+    fun showDialogForPermission(
+        act: InvisibleExcuseMeActivity,
+        permissions: Array<out String?>,
+        callback: (Boolean) -> Unit
+    ) {
         dialogType = if (deniedPermissions.firstOrNull {
                 ActivityCompat.shouldShowRequestPermissionRationale(act, it)
             } is String)
@@ -75,41 +81,54 @@ class PosPermissionDialog : ExcuseMeDialog {
             DialogType.SHOW_SETTINGS
 
         if (customRequest != null) {
-            customRequest?.invoke(dialogType) { channelAns(it) }
+            customRequest?.invoke(dialogType) { callback(it) }
         } else {
-            val dialog = AlertDialog.Builder(act)
-            val v = act.layoutInflater.inflate(R.layout.dialog_gently_ask, null)
-            binding = DialogGentlyAskBinding.inflate(act.layoutInflater)
-            binding.excuseMeGentlyTitle?.text =
-                when (dialogType) {
-                    DialogType.EXPLAIN_AGAIN -> title
-                    DialogType.SHOW_SETTINGS -> titleShowSettings
-                }
-            binding.excuseMeGentlyDescriptionText?.text =
-                when (dialogType) {
-                    DialogType.EXPLAIN_AGAIN -> reason
-                    DialogType.SHOW_SETTINGS -> reasonShowSettings
-                }
-            binding.excuseMeGentlyYesBtn?.setOnClickListener { channelAns(true) }
-            binding.excuseMeGentlyYesBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
-            binding.excuseMeGentlyNoBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
-            binding.excuseMeGentlyTitle?.setBackgroundColor(DesignUtils.resolveColor(act, "colorPrimary"))
-            binding.excuseMeGentlyDescriptionText?.setTextColor(DesignUtils.resolveColor(act, "#0c0c0c"))
-            binding.excuseMeGentlyNoBtn?.setOnClickListener { channelAns(false) }
-            dialog.setOnCancelListener { channelAns(false) }
-            dialog.setView(v)
-            dialog.setCancelable(false)
-            alertDialog = dialog.show()
+            act.setContent {
+                AlertDialog(
+                    title = {
+                        Text(
+                            text = when (dialogType) {
+                                DialogType.EXPLAIN_AGAIN -> titleAskAgain
+                                DialogType.SHOW_SETTINGS -> titleShowSettings
+                            } ?: stringResource(R.string.excuseme_generic_persmission_title)
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = when (dialogType) {
+                                DialogType.EXPLAIN_AGAIN -> reasonAskAgain
+                                DialogType.SHOW_SETTINGS -> reasonShowSettings
+                            } ?: stringResource(
+                                R.string.excuseme_generic_persmission_description,
+                                permissions.joinToString { it?.renameGenericPermission().orEmpty() }
+                            )
+                        )
+                    },
+                    onDismissRequest = { callback(false) },
+                    confirmButton = {
+                        TextButton(
+                            onClick = { callback(true) },
+                        ) {
+                            Text(stringResource(R.string.excuseme_continue_button))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { callback(false) },
+                        ) {
+                            Text(stringResource(R.string.excuseme_not_now_button))
+                        }
+                    }
+                )
+            }
         }
-
-        return super.showDialogForPermission(act)
     }
 
     /**
      * Set the permissions that were denied
      * @param denied list of permissions denied
      */
-    fun setDeniedPermissions(denied: List<String>) {
+    fun setDeniedPermissions(denied: Set<String>) {
         this.deniedPermissions = denied
     }
 

@@ -21,6 +21,8 @@
 package com.araujo.jordan.excusemesample
 
 import android.Manifest.permission
+import android.R.color.holo_green_light
+import android.R.color.holo_red_light
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -30,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import com.araujo.jordan.excuseme.ExcuseMe
+import com.araujo.jordan.excuseme.R
 import com.araujo.jordan.excuseme.view.dialog.DialogType
 import com.araujo.jordan.excusemesample.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
@@ -37,12 +40,12 @@ import kotlinx.coroutines.launch
 /**
  * Sample for the ExcuseMe library
  */
-class ExampleActivity : AppCompatActivity() {
+internal class ExampleActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    val green by lazy { AppCompatResources.getColorStateList(this, R.color.colorGreen) }
-    val red by lazy { AppCompatResources.getColorStateList(this, R.color.colorRed) }
+    val green by lazy { AppCompatResources.getColorStateList(this, holo_green_light) }
+    val red by lazy { AppCompatResources.getColorStateList(this, holo_red_light) }
 
     val granted = "Granted"
     val denied = "Denied"
@@ -55,11 +58,91 @@ class ExampleActivity : AppCompatActivity() {
 
         updateTextsWithPermissions()
 
-        ExcuseMe.couldYouHandlePermissionsForMe(this) { accept -> if (accept) updateTextsWithPermissions() }
+//        ExcuseMe.couldYouHandlePermissionsForMe(this) { accept -> if (accept) updateTextsWithPermissions() }
+
+        //Example of permission using the suspend function
+        //and using the permission answer to update screen.
+        binding.calendarPermissionButton.setOnClickListener {
+            lifecycleScope.launch {
+                val isGranted: Boolean = ExcuseMe.couldYouGive(this@ExampleActivity)
+                    .permissionFor(permission.WRITE_CALENDAR)
+
+                updateTextsWithPermissions()
+            }
+        }
+
+        //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
+        //Source: https://developer.android.com/topic/performance/vitals/permissions
+        binding.contactsPermissionButton.setOnClickListener {
+            lifecycleScope.launch {
+                val isGranted = ExcuseMe.couldYouGive(this@ExampleActivity)
+                    .permissionFor(permission.READ_CONTACTS)
+
+                if (isGranted) {
+                    val phones: Cursor? = contentResolver.query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                    println(phones?.count)
+                    phones?.close()
+                }
+
+                updateTextsWithPermissions()
+            }
+        }
+
+        //Example of a CUSTOM dialog BEFORE ask the permissions. This is good for your Play Store Vitals
+        //Source: https://developer.android.com/topic/performance/vitals/permissions
+        binding.cameraPermissionButton.setOnClickListener {
+            lifecycleScope.launch {
+                ExcuseMe.couldYouGive(this@ExampleActivity)
+                    .gently { result ->
+                        AlertDialog.Builder(this@ExampleActivity).apply {
+                            setTitle("Permission to Camera Example")
+                            setMessage("This is a custom dialog asking camera permission")
+                            setPositiveButton(R.string.excuseme_continue_button) { _, _ ->
+                                result(
+                                    true
+                                )
+                            }
+                            setNegativeButton(R.string.excuseme_not_now_button) { _, _ ->
+                                result(
+                                    false
+                                )
+                            }
+                            setOnCancelListener { result(false) }
+                        }.create().show()
+                    }
+                    .permissionFor(permission.CAMERA) {
+                        updateTextsWithPermissions()
+                    }
+            }
+        }
 
         //Example of a simple permissions request with callback
         binding.audioPermissionButton.setOnClickListener {
             ExcuseMe.couldYouGive(this).permissionFor(permission.RECORD_AUDIO) {
+                updateTextsWithPermissions()
+            }
+        }
+
+        //Example of a simple permissions request with callback
+        binding.smsPermissionButton.setOnClickListener {
+            ExcuseMe.couldYouGive(this).please { type, result ->
+                when (type) {
+                    DialogType.EXPLAIN_AGAIN -> {
+                        /** do you things**/
+                    }
+
+                    DialogType.SHOW_SETTINGS -> {
+                        /** do you things**/
+                    }
+                }
+                updateTextsWithPermissions()
+            }.permissionFor(permission.SEND_SMS) {
                 updateTextsWithPermissions()
             }
         }
@@ -72,92 +155,6 @@ class ExampleActivity : AppCompatActivity() {
                 permission.RECORD_AUDIO,
                 permission.WRITE_CALENDAR
             ) {
-                updateTextsWithPermissions()
-            }
-        }
-
-        //Example of permission using the suspend function
-        //and using the permission answer to update screen.
-        binding.calendarPermissionButton.setOnClickListener {
-            lifecycleScope.launch {
-                val res =
-                    ExcuseMe.couldYouGive(this@ExampleActivity)
-                        .permissionFor(permission.WRITE_CALENDAR)
-
-                binding.calendarPermissionsFeedback?.apply {
-                    if (res) {
-                        text = granted
-                        setTextColor(green.defaultColor)
-                    } else {
-                        text = denied
-                        setTextColor(red.defaultColor)
-                    }
-                }
-            }
-        }
-
-//        //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
-//        //Source: https://developer.android.com/topic/performance/vitals/permissions
-//        contactsPermissionButton.setOnClickListener {
-//            lifecycleScope.launch {
-//                ExcuseMe.couldYouGive(this@ExampleActivity)
-//                    .gently(
-//                        "Permission Request",
-//                        "To easily connect with family and friends, allow the app access to your contacts"
-//                    )
-//                    .permissionFor(permission.READ_CONTACTS)
-//                updateTextsWithPermissions()
-//            }
-//        }
-
-        //Example of a dialog BEFORE ask the permissions. This is good for your Play Store Vitals
-        //Source: https://developer.android.com/topic/performance/vitals/permissions
-        binding.contactsPermissionButton.setOnClickListener {
-            lifecycleScope.launch {
-                val phones: Cursor? = contentResolver.query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null
-                )
-                println(phones?.count)
-                phones?.close()
-                updateTextsWithPermissions()
-            }
-        }
-
-        //Example of a CUSTOM dialog BEFORE ask the permissions. This is good for your Play Store Vitals
-        //Source: https://developer.android.com/topic/performance/vitals/permissions
-        binding.cameraPermissionButton.setOnClickListener {
-            ExcuseMe.couldYouGive(this)
-                .gently { result ->
-                    val dialog = AlertDialog.Builder(this@ExampleActivity)
-                    dialog.setTitle("Ask Permissions")
-                    dialog.setMessage("The app will need permission to take a picture for scan a document")
-                    dialog.setNegativeButton("Not now") { _, _ -> result(false) }
-                    dialog.setPositiveButton("Continue") { _, _ -> result(true) }
-                    dialog.setOnCancelListener { result(false) } //important
-                    dialog.show()
-
-                }
-                .permissionFor(permission.CAMERA) {
-                    updateTextsWithPermissions()
-                }
-        }
-
-        //Example of a simple permissions request with callback
-        binding.smsPermissionButton.setOnClickListener {
-            ExcuseMe.couldYouGive(this).please { type, result ->
-                when (type) {
-                    DialogType.EXPLAIN_AGAIN -> {
-                        /** do you things**/
-                    }
-                    DialogType.SHOW_SETTINGS -> {
-                        /** do you things**/
-                    }
-                }
-            }.permissionFor(permission.SEND_SMS) {
                 updateTextsWithPermissions()
             }
         }

@@ -3,43 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="320dp"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/excuseMeGentlyTitle"
+        tools:text="Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:paddingBottom="40dp"
-        android:textColor="@android:color/white"
         android:textSize="20sp"
         android:paddingTop="40dp"
         android:textStyle="bold" />
-
-    <!--    <androidx.recyclerview.widget.RecyclerView-->
-    <!--        android:id="@+id/excuseMeGentlyIconsGrid"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="center"-->
-    <!--        android:gravity="center"-->
-    <!--        android:paddingStart="22dp"-->
-    <!--        android:paddingTop="40dp"-->
-    <!--        android:paddingBottom="40dp"-->
-    <!--        android:paddingEnd="22dp"-->
-    <!--        android:scaleType="center"-->
-    <!--        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"-->
-    <!--        app:spanCount="5" />-->
 
     <TextView
         android:id="@+id/excuseMeGentlyDescriptionText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="22dp"
-        android:layout_marginBottom="25dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:textSize="16sp"
         tools:text="This dialog will create a text along with your explanation to clarify the usage of the permission. For example, if you want permission to use the camera for scan user documents, you can simply add scan documents for verification. So the ExcuseMe will generate a text like: To scan documents for verification, allow YourAppName to access the permission for Camera." />
 
@@ -47,30 +31,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginEnd="22dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/excuseMeGentlyNoBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#0fff"
-            android:paddingStart="10dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
+            android:paddingEnd="20dp"
             android:text="@string/excuseme_not_now_button" />
 
         <Button
             android:id="@+id/excuseMeGentlyYesBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#0fff"
-            android:paddingStart="10dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
+            android:paddingStart="20dp"
             android:text="@string/excuseme_continue_button" />
 
     </LinearLayout>

@@ -24,7 +24,7 @@ package com.araujo.jordan.excuseme
 import android.Manifest
 import android.os.Build
 import androidx.test.rule.GrantPermissionRule
-import com.araujo.jordan.excuseme.view.InvisibleActivity
+import com.araujo.jordan.excuseme.view.InvisibleExcuseMeActivity
 import org.junit.Assert.assertFalse
 import org.junit.FixMethodOrder
 import org.junit.Rule
@@ -55,7 +55,7 @@ class CheckPermissionsTest {
      */
     @Test
     fun test01CheckNotGrantedPermission() {
-        val activity = Robolectric.buildActivity(InvisibleActivity::class.java).get()
+        val activity = Robolectric.buildActivity(InvisibleExcuseMeActivity::class.java).get()
         assertFalse(ExcuseMe.doWeHavePermissionFor(activity, Manifest.permission.CAMERA))
     }
 
@@ -64,7 +64,7 @@ class CheckPermissionsTest {
      */
     @Test
     fun test02CheckGrantedPermission() {
-        val activity = Robolectric.buildActivity(InvisibleActivity::class.java).get()
+        val activity = Robolectric.buildActivity(InvisibleExcuseMeActivity::class.java).get()
         assert(ExcuseMe.doWeHavePermissionFor(activity, Manifest.permission.READ_SMS))
     }
 }

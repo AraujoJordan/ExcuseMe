@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="excuseme_generic_persmission_title">Permission request</string>
+    <string name="excuseme_generic_persmission_description">You will be ask permission to %1$s</string>
     <string name="excuseme_not_now_button">Not now</string>
     <string name="excuseme_continue_button">Continue</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

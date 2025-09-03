@@ -22,26 +22,32 @@
 
 package com.araujo.jordan.excuseme.view.dialog
 
-import android.annotation.SuppressLint
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.compose.setContent
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
+import com.araujo.jordan.excuseme.ExcuseMe.renameGenericPermission
 import com.araujo.jordan.excuseme.R
-import com.araujo.jordan.excuseme.databinding.DialogGentlyAskBinding
-import com.araujo.jordan.excuseme.utils.DesignUtils
-import com.araujo.jordan.excuseme.view.InvisibleActivity
+import com.araujo.jordan.excuseme.view.InvisibleExcuseMeActivity
 
 /**
  * Implementation Dialog to explain the reason for the permission should be granted.
  * This dialog will be showed before the permission request shows and will prevent if the user denied this one
  * @author Jordan L. Araujo Jr. (araujojordan)
  */
-class PrePermissionDialog : ExcuseMeDialog {
+class PrePermissionDialog {
 
-    private lateinit var binding: DialogGentlyAskBinding
+    var title: String? = null
+    var reason: String? = null
 
     private var customRequest: (((Boolean) -> Unit) -> Unit)? = null
 
-    constructor() : super(false)
-    constructor(title: String, reason: String) : super(title, reason)
+    constructor()
+    constructor(title: String, reason: String) {
+        this.title = title
+        this.reason = reason
+    }
 
     /**
      * Constructor to let the user implement his own dialog/code to show before the
@@ -51,7 +57,7 @@ class PrePermissionDialog : ExcuseMeDialog {
      *
      * @param customDialogRequest run the code that user want. It must return the boolean callback inside to continue.
      */
-    constructor(customDialogRequest: (((Boolean) -> Unit) -> Unit)) : super(true) {
+    constructor(customDialogRequest: (((Boolean) -> Unit) -> Unit)) {
         this.customRequest = customDialogRequest
     }
 
@@ -59,28 +65,41 @@ class PrePermissionDialog : ExcuseMeDialog {
      * Show PreDialog Permission (genlty method)
      * @param act Activity that will launch the dialog
      */
-    @SuppressLint("InflateParams")
-    override suspend fun showDialogForPermission(act: InvisibleActivity): Boolean {
-        if (customRequest != null) {
-            customRequest?.invoke { channelAns(it) }
-        } else {
-            val dialog = AlertDialog.Builder(act)
-            val v = act.layoutInflater.inflate(R.layout.dialog_gently_ask, null)
-            binding = DialogGentlyAskBinding.inflate(act.layoutInflater)
-            binding.excuseMeGentlyTitle?.text = title
-            binding.excuseMeGentlyDescriptionText?.text = reason
-            binding.excuseMeGentlyYesBtn?.setOnClickListener { channelAns(true) }
-            binding.excuseMeGentlyYesBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
-            binding.excuseMeGentlyNoBtn?.setTextColor(DesignUtils.resolveColor(act, "colorPrimaryDark"))
-            binding.excuseMeGentlyTitle?.setBackgroundColor(DesignUtils.resolveColor(act, "colorPrimary"))
-            binding.excuseMeGentlyDescriptionText?.setTextColor(DesignUtils.resolveColor(act, "#0c0c0c"))
-            binding.excuseMeGentlyNoBtn?.setOnClickListener { channelAns(false) }
-            dialog.setOnCancelListener { channelAns(false) }
-            dialog.setView(v)
-            dialog.setCancelable(false)
-            alertDialog = dialog.show()
+    fun showDialogForPermission(
+        act: InvisibleExcuseMeActivity,
+        permissions: Array<out String?>,
+        result: (Boolean) -> Unit
+    ) {
+        customRequest?.let { customRequest ->
+            customRequest(result)
+        } ?: act.setContent {
+            AlertDialog(
+                title = {
+                    Text(
+                        text = title
+                            ?: stringResource(R.string.excuseme_generic_persmission_title)
+                    )
+                },
+                text = {
+                    Text(
+                        text = reason ?: stringResource(
+                            R.string.excuseme_generic_persmission_description,
+                            permissions.joinToString { it?.renameGenericPermission().orEmpty() }
+                        )
+                    )
+                },
+                onDismissRequest = { result(false) },
+                confirmButton = {
+                    TextButton(onClick = { result(true) }) {
+                        Text(stringResource(R.string.excuseme_continue_button))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { result(false) }) {
+                        Text(stringResource(R.string.excuseme_not_now_button))
+                    }
+                }
+            )
         }
-
-        return super.showDialogForPermission(act)
     }
 }

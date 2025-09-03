@@ -8,7 +8,7 @@
             android:name="android.test.mock"
             android:required="false" />
         <activity
-            android:name=".view.InvisibleActivity"
+            android:name=".view.InvisibleExcuseMeActivity"
             android:launchMode="singleInstance"
             android:theme="@style/ExcuseMe.Theme.Transparent" />
     </application>

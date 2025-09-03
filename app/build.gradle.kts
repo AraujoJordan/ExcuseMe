@@ -16,6 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.araujo.jordan.excusemesample"
         minSdk = 24
+        targetSdk = 36
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -41,7 +42,6 @@ kotlin.compilerOptions.jvmTarget = JvmTarget.JVM_17
 
 dependencies {
     implementation(projects.excuseme)
-
     implementation(libs.kotlin.stdlib)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.appcompat)
