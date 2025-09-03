@@ -1,14 +1,14 @@
 version: 2.1
 orbs:
-  codecov: codecov/codecov@1.0.2
+  codecov: codecov/codecov@5.5.0
 jobs:
   build:
     docker:
-      - image: circleci/android:api-30
+      - image: cimg/android:2025.08
     parallelism: 2
     environment:
       - TERM: dumb
-      - CODECOV_TOKEN: 339a1a45-8a78-4758-96e9-63b590be7b55
+      - CODECOV_TOKEN: $CODECOV_TOKEN
       - COV_REPORT_LOCATION: excuseme/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml
       - JVM_OPTS: -Xmx2048m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
       - _JAVA_OPTIONS: "-Xmx2048m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
