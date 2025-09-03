@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
 }
 
 android {

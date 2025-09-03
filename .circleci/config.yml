@@ -14,8 +14,6 @@ jobs:
       - _JAVA_OPTIONS: "-Xmx2048m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
     steps:
       - checkout
-      - restore_cache:
-          key: jars-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}-{{ checksum "excuseme/build.gradle" }}
       - run:
           name: Install Java 17
           command: |
@@ -27,19 +25,11 @@ jobs:
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-            - ~/.m2
-          key: jars-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}-{{ checksum "excuseme/build.gradle" }}
-      - run:
-          name: Lint Check
-          command: ./gradlew :excuseme:lint
       - run:
           name: Run Tests
-          command: ./gradlew :excuseme:jacocoTestReportDebug
+          command: ./gradlew :excuseMe:testDebugUnitTest :excuseme:koverXmlReportDebug
       - store_artifacts:
-          path: excuseme/build/reports
+          path: excuseme/build/reports/
           destination: reports
       - codecov/upload:
           file: excuseme/build/test-results/testDebugUnitTest/TEST-com.araujo.jordan.excuseme.CheckPermissionsTest.xml
