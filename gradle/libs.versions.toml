@@ -1,4 +1,5 @@
 [versions]
+jvmVersion="17"
 appcompat = "1.7.1"
 cardview = "1.0.0"
 coreKtx = "1.17.0"
@@ -19,6 +20,7 @@ frag-ktx = "1.8.9"
 activityCompose = "1.10.1"
 kotlin = "2.2.10"
 composeBom = "2025.08.01"
+kotlinxKover = "0.9.1"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -48,5 +50,10 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
+
 [plugins]
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "gradle" }
+android-library = { id = "com.android.library", version.ref = "gradle" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kotlinxKover" }
